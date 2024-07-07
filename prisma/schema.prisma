@@ -1,0 +1,290 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model AnnouncementVendor {
+  announcementVendorId String       @id @default(uuid())
+  vendorId             String
+  vendor               Vendor       @relation(fields: [vendorId], references: [vendorId])
+  announcementId       String
+  announcement         Announcement @relation(fields: [announcementId], references: [announcementId])
+}
+
+model AnnouncementCustomer {
+  announcementCustomerId String       @id @default(uuid())
+  customerId             String
+  customer               Customer     @relation(fields: [customerId], references: [customerId])
+  announcementId         String
+  announcement           Announcement @relation(fields: [announcementId], references: [announcementId])
+}
+
+model Announcement {
+  announcementId       String                 @id @default(uuid())
+  title                String
+  content              String
+  image                String
+  type                 String
+  createAt             DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  announcementVendor   AnnouncementVendor[]
+  announcementCustomer AnnouncementCustomer[]
+}
+
+model AdminRole {
+  adminRoleId String  @id @default(uuid())
+  name        String
+  admin       Admin[]
+}
+
+model Admin {
+  adminId     String     @id @default(uuid())
+  name        String
+  email       String
+  password    String
+  adminRoleId String
+  isActive    Boolean
+  adminRole   AdminRole  @relation(fields: [adminRoleId], references: [adminRoleId])
+  delivery    Delivery[]
+  createAt    DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Variant {
+  variantId      String           @id @default(uuid())
+  name           String
+  color          String
+  productVariant ProductVariant[]
+  createAt       DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+}
+
+model ProductVariant {
+  productVariantId           String                       @id @default(uuid())
+  variantId                  String
+  productId                  String
+  variant                    Variant                      @relation(fields: [variantId], references: [variantId])
+  product                    Product                      @relation(fields: [productId], references: [productId])
+  purchaseProduct            PurchaseProduct[]
+  wishListProduct            WishListProduct[]
+  cartProduct                CartProduct[]
+  customerOrderVendorProduct CustomerOrderVendorProduct[]
+}
+
+model Delivery {
+  deliveryId     String          @id @default(uuid())
+  deliveryCode   String
+  deliveryStatus String
+  deliveryName   String
+  createAt       DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  completeAt     DateTime
+  adminId        String
+  admin          Admin           @relation(fields: [adminId], references: [adminId])
+  deliveryOrder  DeliveryOrder[]
+}
+
+model Category {
+  categoryId String    @id @default(uuid())
+  name       String
+  product    Product[]
+  createAt   DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
+
+model ProductImage {
+  productImageId String   @id @default(uuid())
+  image          String
+  productId      String
+  product        Product  @relation(fields: [productId], references: [productId])
+  createAt       DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model VendorUser {
+  vendorUserId     String           @id @default(uuid())
+  name             String
+  email            String
+  password         String
+  vendorUserRoleId String
+  isActive         Boolean
+  vendorUserRole   VendorUserRole   @relation(fields: [vendorUserRoleId], references: [vendorUserRoleId])
+  vendorPurchase   VendorPurchase[]
+  createAt         DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+}
+
+model Vendor {
+  vendorId            String                @id @default(uuid())
+  name                String
+  image               String
+  email               String
+  password            String
+  isActive            Boolean
+  createAt            DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  product             Product[]
+  customerOrderVendor CustomerOrderVendor[]
+  announcementVendor  AnnouncementVendor[]
+}
+
+model Customer {
+  customerId           String                 @id @default(uuid())
+  name                 String
+  email                String
+  password             String
+  image                String
+  phone                String
+  address              String
+  announcementCustomer AnnouncementCustomer[]
+  wishListProduct      WishListProduct[]
+  cartProduct          CartProduct[]
+  customerOrder        CustomerOrder[]
+  customerOrderVendor  CustomerOrderVendor[]
+  createAt             DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+}
+
+model PurchaseProduct {
+  purchaseProductId String         @id @default(uuid())
+  purchasePrice     Float
+  quantity          Int
+  productVariantId  String
+  productId         String
+  productVariant    ProductVariant @relation(fields: [productVariantId], references: [productVariantId])
+  product           Product        @relation(fields: [productId], references: [productId])
+  vendorPurchaseId  String
+  vendorPurchase    VendorPurchase @relation(fields: [vendorPurchaseId], references: [vendorPurchaseId])
+  createAt          DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+}
+
+model VendorUserRole {
+  vendorUserRoleId String       @id @default(uuid())
+  name             String
+  vendorUser       VendorUser[]
+}
+
+model WishListProduct {
+  wishListProductId String         @id @default(uuid())
+  productId         String
+  productVariantId  String
+  customerId        String
+  product           Product        @relation(fields: [productId], references: [productId])
+  productVariant    ProductVariant @relation(fields: [productVariantId], references: [productVariantId])
+  customer          Customer       @relation(fields: [customerId], references: [customerId])
+}
+
+model VendorPurchase {
+  vendorPurchaseId String            @id @default(uuid())
+  purchaseCode     String
+  purchaseAt       DateTime
+  vendorUserId     String
+  vendorUser       VendorUser        @relation(fields: [vendorUserId], references: [vendorUserId])
+  purchaseProduct  PurchaseProduct[]
+  createAt         DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+}
+
+model CartProduct {
+  cartProductId    String         @id @default(uuid())
+  productId        String
+  productVariantId String
+  customerId       String
+  product          Product        @relation(fields: [productId], references: [productId])
+  productVariant   ProductVariant @relation(fields: [productVariantId], references: [productVariantId])
+  customer         Customer       @relation(fields: [customerId], references: [customerId])
+}
+
+model CustomerOrder {
+  customerOrderId     String                @id @default(uuid())
+  orderCode           String
+  orderStatus         String
+  totalPrice          Float
+  deliveryPrice       Float
+  deliveryAddress     String
+  deliveryMethod      String
+  customerId          String
+  createAt            DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  customer            Customer              @relation(fields: [customerId], references: [customerId])
+  customerOrderVendor CustomerOrderVendor[]
+}
+
+model DeliveryOrder {
+  deliveryOrderId       String              @id @default(uuid())
+  deliveryOrderStatus   String
+  deliveryName          String
+  startAt               DateTime
+  endAt                 DateTime
+  deliveryId            String
+  customerOrderVendorId String
+  delivery              Delivery            @relation(fields: [deliveryId], references: [deliveryId])
+  customerOrderVendor   CustomerOrderVendor @relation(fields: [customerOrderVendorId], references: [customerOrderVendorId])
+}
+
+model CustomerOrderVendor {
+  customerOrderVendorId      String                       @id @default(uuid())
+  vendorName                 String
+  vendorId                   String
+  customerOrderVendorStatus  String
+  deliveryAddress            String
+  customerOrderId            String
+  customerId                 String
+  vendor                     Vendor                       @relation(fields: [vendorId], references: [vendorId])
+  customerOrder              CustomerOrder                @relation(fields: [customerOrderId], references: [customerOrderId])
+  customer                   Customer                     @relation(fields: [customerId], references: [customerId])
+  deliveryOrder              DeliveryOrder[]
+  customerOrderVendorProduct CustomerOrderVendorProduct[]
+}
+
+model CustomerOrderVendorProduct {
+  customerOrderVendorProductId String              @id @default(uuid())
+  productName                  String
+  variantName                  String
+  vendorName                   String
+  quantity                     Int
+  price                        Float
+  orderVendorProductStatus     String
+  productId                    String
+  productVariantId             String
+  customerOrderVendorId        String
+  product                      Product             @relation(fields: [productId], references: [productId])
+  productVariant               ProductVariant      @relation(fields: [productVariantId], references: [productVariantId])
+  customerOrderVendor          CustomerOrderVendor @relation(fields: [customerOrderVendorId], references: [customerOrderVendorId])
+}
+
+model Product {
+  productId                  String                       @id @default(uuid())
+  name                       String
+  description                String
+  primaryImage               String
+  weight                     Float
+  price                      Float
+  promotion                  Boolean
+  promotionPrice             Float
+  stock                      Int
+  isActive                   Boolean
+  vendorId                   String
+  categoryId                 String
+  vendor                     Vendor                       @relation(fields: [vendorId], references: [vendorId])
+  category                   Category                     @relation(fields: [categoryId], references: [categoryId])
+  productImage               ProductImage[]
+  productVariant             ProductVariant[]
+  purchaseProduct            PurchaseProduct[]
+  wishListProduct            WishListProduct[]
+  cartProduct                CartProduct[]
+  customerOrderVendorProduct CustomerOrderVendorProduct[]
+  createAt                   DateTime                     @default(now())
+  updatedAt                  DateTime                     @updatedAt
+}
