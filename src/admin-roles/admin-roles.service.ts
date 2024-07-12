@@ -5,13 +5,13 @@ import { DatabaseService } from 'src/database/database.service';
 
 @Injectable()
 export class AdminRolesService {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(private readonly _db: DatabaseService) {}
 
   async create(
     createAdminRoleDto: Prisma.AdminRoleCreateInput,
   ): Promise<Response<AdminRole>> {
     try {
-      const res = await this.databaseService.adminRole.create({
+      const res = await this._db.adminRole.create({
         data: createAdminRoleDto,
       });
       return {
@@ -29,7 +29,7 @@ export class AdminRolesService {
 
   async findAll(): Promise<Response<AdminRole[]>> {
     try {
-      const res = await this.databaseService.adminRole.findMany();
+      const res = await this._db.adminRole.findMany();
       return {
         message: 'Admin roles fetched successfully',
         data: res,
@@ -44,7 +44,7 @@ export class AdminRolesService {
   }
 
   async findOne(id: string) {
-    return this.databaseService.adminRole.findUnique({
+    return this._db.adminRole.findUnique({
       where: {
         adminRoleId: id,
       },
@@ -52,7 +52,7 @@ export class AdminRolesService {
   }
 
   async update(id: string, updateAdminRoleDto: Prisma.AdminRoleUpdateInput) {
-    return this.databaseService.adminRole.update({
+    return this._db.adminRole.update({
       where: {
         adminRoleId: id,
       },
@@ -61,7 +61,7 @@ export class AdminRolesService {
   }
 
   async remove(id: string) {
-    return this.databaseService.adminRole.delete({
+    return this._db.adminRole.delete({
       where: {
         adminRoleId: id,
       },

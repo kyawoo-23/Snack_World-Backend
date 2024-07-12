@@ -9,7 +9,9 @@ import {
 } from '@nestjs/common';
 import { AdminRolesService } from './admin-roles.service';
 import { Prisma } from '@prisma/client';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('admin-roles')
 @Controller('admin-roles')
 export class AdminRolesController {
   constructor(private readonly adminRolesService: AdminRolesService) {}
