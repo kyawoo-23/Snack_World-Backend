@@ -117,8 +117,10 @@ model VendorUser {
   email            String
   password         String
   vendorUserRoleId String
+  vendorId         String
   isActive         Boolean
   vendorUserRole   VendorUserRole   @relation(fields: [vendorUserRoleId], references: [vendorUserRoleId])
+  vendor           Vendor           @relation(fields: [vendorId], references: [vendorId])
   vendorPurchase   VendorPurchase[]
   createAt         DateTime         @default(now())
   updatedAt        DateTime         @updatedAt
@@ -136,6 +138,7 @@ model Vendor {
   product             Product[]
   customerOrderVendor CustomerOrderVendor[]
   announcementVendor  AnnouncementVendor[]
+  vendorUser          VendorUser[]
 }
 
 model Customer {
