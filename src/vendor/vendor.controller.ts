@@ -43,9 +43,4 @@ export class VendorController {
   toggleStatus(@Param('id') id: string) {
     return this.vendorService.toggleStatus(id);
   }
-
-  @Patch(':id/update-password')
-  updatePassword(@Param('id') id: string, @Body() updatePasswordDto: string) {
-    return this.vendorService.updatePassword(id, updatePasswordDto);
-  }
 }

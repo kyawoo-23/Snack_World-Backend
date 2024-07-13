@@ -70,6 +70,7 @@ export class VendorService {
       };
     } catch (error) {
       return {
+        isSuccess: false,
         message: 'Failed to fetch vendor',
         data: null,
       };
@@ -94,6 +95,7 @@ export class VendorService {
       };
     } catch (error) {
       return {
+        isSuccess: false,
         message: 'Failed to update vendor',
         data: null,
       };
@@ -130,33 +132,8 @@ export class VendorService {
       };
     } catch (error) {
       return {
+        isSuccess: false,
         message: 'Failed to update vendor status',
-        data: null,
-      };
-    }
-  }
-
-  async updatePassword(
-    id: string,
-    updatePasswordDto: string,
-  ): Promise<Response<Vendor>> {
-    try {
-      const res = await this._db.vendor.update({
-        where: {
-          vendorId: id,
-        },
-        data: {
-          password: updatePasswordDto,
-        },
-      });
-
-      return {
-        message: 'Vendor password updated successfully',
-        data: res,
-      };
-    } catch (error) {
-      return {
-        message: 'Failed to update vendor password',
         data: null,
       };
     }
