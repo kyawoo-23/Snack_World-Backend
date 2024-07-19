@@ -49,6 +49,9 @@ export class AdminService {
         where: {
           adminId: id,
         },
+        include: {
+          adminRole: true,
+        },
       });
       return {
         message: 'Admin fetched successfully',

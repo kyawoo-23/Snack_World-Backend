@@ -56,6 +56,9 @@ export class VendorUserService {
         where: {
           vendorUserId: id,
         },
+        include: {
+          vendorUserRole: true,
+        },
       });
 
       if (!res) {
