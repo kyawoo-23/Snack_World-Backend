@@ -9,9 +9,13 @@ import { CategoryModule } from './category/category.module';
 import { VendorModule } from './vendor/vendor.module';
 import { VendorUserRolesModule } from './vendor-user-roles/vendor-user-roles.module';
 import { VendorUserModule } from './vendor-user/vendor-user.module';
+import { AnnouncementModule } from './announcement/announcement.module';
+import { AnnouncementCustomerModule } from './announcement-customer/announcement-customer.module';
+import { AnnouncementVendorModule } from './announcement-vendor/announcement-vendor.module';
+import { AnnouncementModule } from './announcement/announcement.module';
 
 @Module({
-  imports: [DatabaseModule, AdminRolesModule, AdminModule, DeliveryModule, CategoryModule, VendorModule, VendorUserRolesModule, VendorUserModule],
+  imports: [DatabaseModule, AdminRolesModule, AdminModule, DeliveryModule, CategoryModule, VendorModule, VendorUserRolesModule, VendorUserModule, AnnouncementModule, AnnouncementVendorModule, AnnouncementCustomerModule],
   controllers: [AppController],
   providers: [AppService],
 })
