@@ -9,13 +9,28 @@ import { CategoryModule } from './category/category.module';
 import { VendorModule } from './vendor/vendor.module';
 import { VendorUserRolesModule } from './vendor-user-roles/vendor-user-roles.module';
 import { VendorUserModule } from './vendor-user/vendor-user.module';
-import { AnnouncementModule } from './announcement/announcement.module';
+import { VariantModule } from './variant/variant.module';
 import { AnnouncementCustomerModule } from './announcement-customer/announcement-customer.module';
 import { AnnouncementVendorModule } from './announcement-vendor/announcement-vendor.module';
 import { AnnouncementModule } from './announcement/announcement.module';
+import { ProductModule } from './product/product.module';
 
 @Module({
-  imports: [DatabaseModule, AdminRolesModule, AdminModule, DeliveryModule, CategoryModule, VendorModule, VendorUserRolesModule, VendorUserModule, AnnouncementModule, AnnouncementVendorModule, AnnouncementCustomerModule],
+  imports: [
+    DatabaseModule,
+    AdminRolesModule,
+    AdminModule,
+    DeliveryModule,
+    CategoryModule,
+    VendorModule,
+    VendorUserRolesModule,
+    VendorUserModule,
+    AnnouncementModule,
+    AnnouncementVendorModule,
+    AnnouncementCustomerModule,
+    VariantModule,
+    ProductModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

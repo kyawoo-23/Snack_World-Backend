@@ -30,6 +30,13 @@ export class AdminRolesService {
   async findAll(): Promise<Response<AdminRole[]>> {
     try {
       const res = await this._db.adminRole.findMany();
+
+      if (!res) {
+        return {
+          data: [],
+          message: 'Admin roles not found',
+        };
+      }
       return {
         message: 'Admin roles fetched successfully',
         data: res,

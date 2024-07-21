@@ -1,10 +1,8 @@
 import { Prisma } from '@prisma/client';
 
-export class CreateAnnouncementDto implements Prisma.AnnouncementCreateInput {
-  title: string;
-  content: string;
-  image: string;
-  type: string;
+interface create {
   vendorId?: string;
   customerId?: string;
 }
+
+export type CreateAnnouncementDto = Prisma.AnnouncementCreateInput & create;

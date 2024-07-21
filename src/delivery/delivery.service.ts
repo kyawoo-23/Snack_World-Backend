@@ -39,7 +39,7 @@ export class DeliveryService {
       if (!res.length) {
         return {
           message: `No deliveries found for ${date}`,
-          data: res,
+          data: [],
         };
       }
 

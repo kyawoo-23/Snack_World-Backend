@@ -12,14 +12,27 @@ export class AnnouncementService {
     createAnnouncementDto: CreateAnnouncementDto,
   ): Promise<Response<Announcement>> {
     try {
+      const { vendorId, customerId, ...rest } = createAnnouncementDto;
       const res = await this._db.announcement.create({
         data: {
-          ...createAnnouncementDto,
-          announcementVendor: createAnnouncementDto.vendorId
-            ? { create: { vendorId: createAnnouncementDto.vendorId } }
+          ...rest,
+          announcementVendor: vendorId
+            ? {
+                create: {
+                  vendor: {
+                    connect: { vendorId },
+                  },
+                },
+              }
             : undefined,
-          announcementCustomer: createAnnouncementDto.customerId
-            ? { create: { customerId: createAnnouncementDto.customerId } }
+          announcementCustomer: customerId
+            ? {
+                create: {
+                  customer: {
+                    connect: { customerId },
+                  },
+                },
+              }
             : undefined,
         },
       });
@@ -52,6 +65,13 @@ export class AnnouncementService {
           type,
         },
       });
+
+      if (!res) {
+        return {
+          data: [],
+          message: 'Announcements not found',
+        };
+      }
       return {
         message: 'Announcements fetched successfully',
         data: res,
