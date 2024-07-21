@@ -17,6 +17,7 @@ import { ProductModule } from './product/product.module';
 import { ProductVariantModule } from './product-variant/product-variant.module';
 import { ProductImageModule } from './product-image/product-image.module';
 import { VendorPurchaseModule } from './vendor-purchase/vendor-purchase.module';
+import { CustomerModule } from './customer/customer.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { VendorPurchaseModule } from './vendor-purchase/vendor-purchase.module';
     ProductVariantModule,
     ProductImageModule,
     VendorPurchaseModule,
+    CustomerModule,
   ],
   controllers: [AppController],
   providers: [AppService],

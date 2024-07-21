@@ -9,7 +9,9 @@ import {
 } from '@nestjs/common';
 import { AnnouncementService } from './announcement.service';
 import { CreateAnnouncementDto } from './dto/create-announcement.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('announcement')
 @Controller('announcement')
 export class AnnouncementController {
   constructor(private readonly announcementService: AnnouncementService) {}

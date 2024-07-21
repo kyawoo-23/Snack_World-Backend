@@ -1,7 +1,9 @@
 import { Controller, Get, Post, Body, Patch, Param } from '@nestjs/common';
 import { VendorUserRolesService } from './vendor-user-roles.service';
 import { Prisma } from '@prisma/client';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('vendor-user-roles')
 @Controller('vendor-user-roles')
 export class VendorUserRolesController {
   constructor(
