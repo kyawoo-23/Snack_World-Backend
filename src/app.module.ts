@@ -14,6 +14,8 @@ import { AnnouncementCustomerModule } from './announcement-customer/announcement
 import { AnnouncementVendorModule } from './announcement-vendor/announcement-vendor.module';
 import { AnnouncementModule } from './announcement/announcement.module';
 import { ProductModule } from './product/product.module';
+import { ProductVariantModule } from './product-variant/product-variant.module';
+import { ProductImageModule } from './product-image/product-image.module';
 
 @Module({
   imports: [
@@ -30,6 +32,8 @@ import { ProductModule } from './product/product.module';
     AnnouncementCustomerModule,
     VariantModule,
     ProductModule,
+    ProductVariantModule,
+    ProductImageModule,
   ],
   controllers: [AppController],
   providers: [AppService],

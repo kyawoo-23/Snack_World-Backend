@@ -1,10 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
 import { DatabaseService } from 'src/database/database.service';
 import { Response } from 'src/common/interceptors/response.interceptor';
 import { Prisma, Product } from '@prisma/client';
-import { create } from 'domain';
 
 @Injectable()
 export class ProductService {
