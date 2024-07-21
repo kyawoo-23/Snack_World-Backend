@@ -16,6 +16,7 @@ import { AnnouncementModule } from './announcement/announcement.module';
 import { ProductModule } from './product/product.module';
 import { ProductVariantModule } from './product-variant/product-variant.module';
 import { ProductImageModule } from './product-image/product-image.module';
+import { VendorPurchaseModule } from './vendor-purchase/vendor-purchase.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { ProductImageModule } from './product-image/product-image.module';
     ProductModule,
     ProductVariantModule,
     ProductImageModule,
+    VendorPurchaseModule,
   ],
   controllers: [AppController],
   providers: [AppService],
