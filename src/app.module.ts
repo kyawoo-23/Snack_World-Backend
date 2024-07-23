@@ -18,6 +18,7 @@ import { ProductVariantModule } from './product-variant/product-variant.module';
 import { ProductImageModule } from './product-image/product-image.module';
 import { VendorPurchaseModule } from './vendor-purchase/vendor-purchase.module';
 import { CustomerModule } from './customer/customer.module';
+import { CustomerOrderModule } from './customer-order/customer-order.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { CustomerModule } from './customer/customer.module';
     ProductImageModule,
     VendorPurchaseModule,
     CustomerModule,
+    CustomerOrderModule,
   ],
   controllers: [AppController],
   providers: [AppService],
