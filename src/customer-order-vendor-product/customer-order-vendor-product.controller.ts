@@ -1,7 +1,9 @@
 import { Controller, Get, Body, Patch, Param } from '@nestjs/common';
 import { CustomerOrderVendorProductService } from './customer-order-vendor-product.service';
 import { Prisma } from '@prisma/client';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('customer-order-vendor-product')
 @Controller('customer-order-vendor-product')
 export class CustomerOrderVendorProductController {
   constructor(

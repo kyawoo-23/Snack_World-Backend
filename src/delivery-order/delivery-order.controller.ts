@@ -9,7 +9,9 @@ import {
 } from '@nestjs/common';
 import { DeliveryOrderService } from './delivery-order.service';
 import { Prisma } from '@prisma/client';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('delivery-order')
 @Controller('delivery-order')
 export class DeliveryOrderController {
   constructor(private readonly deliveryOrderService: DeliveryOrderService) {}

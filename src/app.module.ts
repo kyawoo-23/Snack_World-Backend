@@ -23,6 +23,7 @@ import { CustomerOrderVendorModule } from './customer-order-vendor/customer-orde
 import { CustomerOrderVendorProductModule } from './customer-order-vendor-product/customer-order-vendor-product.module';
 import { DeliveryModule } from './delivery/delivery.module';
 import { DeliveryOrderModule } from './delivery-order/delivery-order.module';
+import { WishlistProductModule } from './wishlist-product/wishlist-product.module';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { DeliveryOrderModule } from './delivery-order/delivery-order.module';
     CustomerOrderVendorModule,
     CustomerOrderVendorProductModule,
     DeliveryOrderModule,
+    WishlistProductModule,
   ],
   controllers: [AppController],
   providers: [AppService],
