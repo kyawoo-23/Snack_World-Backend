@@ -48,7 +48,22 @@ export class DeliveryService {
 
   async findAll(): Promise<Response<Delivery[]>> {
     try {
-      const res = await this._db.delivery.findMany();
+      const res = await this._db.delivery.findMany({
+        include: {
+          admin: true,
+          deliveryOrder: {
+            include: {
+              customerOrderVendor: {
+                include: {
+                  customerOrder: true,
+                  vendor: true,
+                  customerOrderVendorProduct: true,
+                },
+              },
+            },
+          },
+        },
+      });
 
       if (res.length === 0) {
         return {
@@ -77,7 +92,25 @@ export class DeliveryService {
         },
         include: {
           admin: true,
-          deliveryOrder: true,
+          deliveryOrder: {
+            include: {
+              customerOrderVendor: {
+                include: {
+                  customerOrder: {
+                    include: {
+                      customer: true,
+                    },
+                  },
+                  vendor: true,
+                  customerOrderVendorProduct: {
+                    include: {
+                      product: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
         },
       });
 
