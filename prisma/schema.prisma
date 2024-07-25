@@ -200,6 +200,7 @@ model VendorPurchase {
 
 model CartProduct {
   cartProductId    String         @id @default(uuid())
+  quantity         Int
   productId        String
   productVariantId String
   customerId       String

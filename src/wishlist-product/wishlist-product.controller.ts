@@ -9,7 +9,9 @@ import {
 } from '@nestjs/common';
 import { WishlistProductService } from './wishlist-product.service';
 import { CreateWishlistProductDto } from './dto/create-wishlist-product.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('wishlist-product')
 @Controller('wishlist-product')
 export class WishlistProductController {
   constructor(

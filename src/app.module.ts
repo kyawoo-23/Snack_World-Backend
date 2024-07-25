@@ -24,6 +24,7 @@ import { CustomerOrderVendorProductModule } from './customer-order-vendor-produc
 import { DeliveryModule } from './delivery/delivery.module';
 import { DeliveryOrderModule } from './delivery-order/delivery-order.module';
 import { WishlistProductModule } from './wishlist-product/wishlist-product.module';
+import { CartProductModule } from './cart-product/cart-product.module';
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { WishlistProductModule } from './wishlist-product/wishlist-product.modul
     CustomerOrderVendorProductModule,
     DeliveryOrderModule,
     WishlistProductModule,
+    CartProductModule,
   ],
   controllers: [AppController],
   providers: [AppService],
