@@ -33,7 +33,7 @@ export class VendorUserRolesService {
     try {
       const res = await this._db.vendorUserRole.findMany();
 
-      if (!res) {
+      if (res.length === 0) {
         return {
           message: 'No vendor user roles found',
           data: [],

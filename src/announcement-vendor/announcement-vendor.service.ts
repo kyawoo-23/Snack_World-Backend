@@ -18,7 +18,7 @@ export class AnnouncementVendorService {
         },
       });
 
-      if (!res) {
+      if (res.length === 0) {
         return {
           data: [],
           message: 'Announcements not found',

@@ -64,7 +64,7 @@ export class CustomerOrderService {
     try {
       const res = await this._db.customerOrder.findMany();
 
-      if (!res.length) {
+      if (res.length === 0) {
         return {
           message: 'No customer orders found',
           data: res,

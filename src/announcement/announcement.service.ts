@@ -66,7 +66,7 @@ export class AnnouncementService {
         },
       });
 
-      if (!res) {
+      if (res.length === 0) {
         return {
           data: [],
           message: 'Announcements not found',

@@ -31,7 +31,7 @@ export class AdminService {
     try {
       const res = await this._db.admin.findMany();
 
-      if (!res) {
+      if (res.length === 0) {
         return {
           data: [],
           message: 'Admins not found',

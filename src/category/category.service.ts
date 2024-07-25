@@ -30,7 +30,7 @@ export class CategoryService {
   async findAll(): Promise<Response<Category[]>> {
     try {
       const res = await this._db.category.findMany();
-      if (!res) {
+      if (res.length === 0) {
         return {
           message: 'No categories found',
           data: [],

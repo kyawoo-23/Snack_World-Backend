@@ -31,7 +31,7 @@ export class AdminRolesService {
     try {
       const res = await this._db.adminRole.findMany();
 
-      if (!res) {
+      if (res.length === 0) {
         return {
           data: [],
           message: 'Admin roles not found',

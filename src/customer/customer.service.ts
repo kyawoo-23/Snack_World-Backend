@@ -29,7 +29,7 @@ export class CustomerService {
   async findAll(): Promise<Response<Customer[]>> {
     try {
       const res = await this._db.customer.findMany();
-      if (!res) {
+      if (res.length === 0) {
         return {
           data: [],
           message: 'Customers not found',

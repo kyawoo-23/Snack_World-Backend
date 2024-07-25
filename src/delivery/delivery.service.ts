@@ -36,7 +36,7 @@ export class DeliveryService {
         },
       });
 
-      if (!res.length) {
+      if (res.length === 0) {
         return {
           message: `No deliveries found for ${date}`,
           data: [],

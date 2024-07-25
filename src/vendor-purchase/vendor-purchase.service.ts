@@ -61,7 +61,7 @@ export class VendorPurchaseService {
         },
       });
 
-      if (!res) {
+      if (res.length === 0) {
         return {
           data: [],
           message: 'Vendor purchases not found',

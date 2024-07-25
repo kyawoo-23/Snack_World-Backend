@@ -44,7 +44,7 @@ export class ProductService {
         },
       });
 
-      if (!res) {
+      if (res.length === 0) {
         return {
           data: [],
           message: 'No products found',

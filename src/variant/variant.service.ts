@@ -30,7 +30,7 @@ export class VariantService {
   async findAll() {
     try {
       const res = await this._db.variant.findMany();
-      if (!res) {
+      if (res.length === 0) {
         return {
           data: [],
           message: 'Variants not found',

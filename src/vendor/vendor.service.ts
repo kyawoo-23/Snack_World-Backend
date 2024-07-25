@@ -30,7 +30,7 @@ export class VendorService {
   async findAll(): Promise<Response<Vendor[]>> {
     try {
       const res = await this._db.vendor.findMany();
-      if (!res) {
+      if (res.length === 0) {
         return {
           message: 'No vendors found',
           data: [],

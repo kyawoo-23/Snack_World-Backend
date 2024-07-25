@@ -19,6 +19,8 @@ import { ProductImageModule } from './product-image/product-image.module';
 import { VendorPurchaseModule } from './vendor-purchase/vendor-purchase.module';
 import { CustomerModule } from './customer/customer.module';
 import { CustomerOrderModule } from './customer-order/customer-order.module';
+import { CustomerOrderVendorModule } from './customer-order-vendor/customer-order-vendor.module';
+import { CustomerOrderVendorProductModule } from './customer-order-vendor-product/customer-order-vendor-product.module';
 
 @Module({
   imports: [
@@ -40,6 +42,8 @@ import { CustomerOrderModule } from './customer-order/customer-order.module';
     VendorPurchaseModule,
     CustomerModule,
     CustomerOrderModule,
+    CustomerOrderVendorModule,
+    CustomerOrderVendorProductModule,
   ],
   controllers: [AppController],
   providers: [AppService],
