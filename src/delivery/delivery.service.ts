@@ -1,20 +1,38 @@
 import { Injectable } from '@nestjs/common';
-import { Delivery, Prisma } from '@prisma/client';
-import { Response } from 'src/common/interceptors/response.interceptor';
+import { CreateDeliveryDto } from './dto/create-delivery.dto';
 import { DatabaseService } from 'src/database/database.service';
+import { Response } from 'src/common/interceptors/response.interceptor';
+import { Delivery, Prisma } from '@prisma/client';
 
 @Injectable()
 export class DeliveryService {
-  constructor(private readonly _db: DatabaseService) {}
+  constructor(private _db: DatabaseService) {}
 
   async create(
-    createDeliveryDto: Prisma.DeliveryCreateInput,
+    createDeliveryDto: CreateDeliveryDto,
   ): Promise<Response<Delivery>> {
     try {
+      const { adminId, deliverOrder, ...data } = createDeliveryDto;
       const res = await this._db.delivery.create({
-        data: createDeliveryDto,
+        data: {
+          ...data,
+          admin: {
+            connect: {
+              adminId,
+            },
+          },
+          deliveryOrder: {
+            create: deliverOrder.map(({ customerOrderVendorId, ...order }) => ({
+              ...order,
+              customerOrderVendor: {
+                connect: {
+                  customerOrderVendorId,
+                },
+              },
+            })),
+          },
+        },
       });
-
       return {
         message: 'Delivery created successfully',
         data: res,
@@ -28,29 +46,24 @@ export class DeliveryService {
     }
   }
 
-  async findWithDate(date: string): Promise<Response<Delivery[]>> {
+  async findAll(): Promise<Response<Delivery[]>> {
     try {
-      const res = await this._db.delivery.findMany({
-        where: {
-          createAt: date,
-        },
-      });
+      const res = await this._db.delivery.findMany();
 
       if (res.length === 0) {
         return {
-          message: `No deliveries found for ${date}`,
           data: [],
+          message: 'Deliveries not found',
         };
       }
-
       return {
-        message: `Deliveries for ${date} fetched successfully`,
+        message: 'Deliveries fetched successfully',
         data: res,
       };
     } catch (error) {
       return {
         isSuccess: false,
-        message: `Failed to fetch deliveries for ${date}`,
+        message: 'Failed to fetch deliveries',
         error: error.message,
       };
     }
@@ -61,6 +74,10 @@ export class DeliveryService {
       const res = await this._db.delivery.findUnique({
         where: {
           deliveryId: id,
+        },
+        include: {
+          admin: true,
+          deliveryOrder: true,
         },
       });
 
@@ -75,13 +92,7 @@ export class DeliveryService {
         message: 'Delivery fetched successfully',
         data: res,
       };
-    } catch (error) {
-      return {
-        isSuccess: false,
-        message: 'Failed to fetch delivery',
-        error: error.message,
-      };
-    }
+    } catch (error) {}
   }
 
   async update(
@@ -104,57 +115,6 @@ export class DeliveryService {
       return {
         isSuccess: false,
         message: 'Failed to update delivery',
-        error: error.message,
-      };
-    }
-  }
-
-  async updateStatus(id: string, status: string): Promise<Response<Delivery>> {
-    try {
-      const res = await this._db.delivery.update({
-        where: {
-          deliveryId: id,
-        },
-        data: {
-          deliveryStatus: status,
-        },
-      });
-
-      return {
-        message: 'Delivery status updated successfully',
-        data: res,
-      };
-    } catch (error) {
-      return {
-        isSuccess: false,
-        message: 'Failed to update delivery status',
-        error: error.message,
-      };
-    }
-  }
-
-  async updateAssignee(
-    id: string,
-    assigneeId: string,
-  ): Promise<Response<Delivery>> {
-    try {
-      const res = await this._db.delivery.update({
-        where: {
-          deliveryId: id,
-        },
-        data: {
-          adminId: assigneeId,
-        },
-      });
-
-      return {
-        message: 'Delivery assignee updated successfully',
-        data: res,
-      };
-    } catch (error) {
-      return {
-        isSuccess: false,
-        message: 'Failed to update delivery assignee',
         error: error.message,
       };
     }

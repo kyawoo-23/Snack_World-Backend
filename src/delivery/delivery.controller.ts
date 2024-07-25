@@ -1,21 +1,20 @@
 import { Controller, Get, Post, Body, Patch, Param } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { DeliveryService } from './delivery.service';
+import { CreateDeliveryDto } from './dto/create-delivery.dto';
 import { Prisma } from '@prisma/client';
-import { DeliveryService } from 'src/delivery/delivery.service';
 
-@ApiTags('delivery')
 @Controller('delivery')
 export class DeliveryController {
   constructor(private readonly deliveryService: DeliveryService) {}
 
   @Post()
-  create(@Body() createDeliveryDto: Prisma.DeliveryCreateInput) {
+  create(@Body() createDeliveryDto: CreateDeliveryDto) {
     return this.deliveryService.create(createDeliveryDto);
   }
 
   @Get()
-  findWithDate(@Body() date: string) {
-    return this.deliveryService.findWithDate(date);
+  findAll() {
+    return this.deliveryService.findAll();
   }
 
   @Get(':id')
@@ -29,15 +28,5 @@ export class DeliveryController {
     @Body() updateDeliveryDto: Prisma.DeliveryUpdateInput,
   ) {
     return this.deliveryService.update(id, updateDeliveryDto);
-  }
-
-  @Patch(':id/update-status')
-  updateStatus(@Param('id') id: string, @Body() status: string) {
-    return this.deliveryService.updateStatus(id, status);
-  }
-
-  @Patch(':id/update-assignee')
-  updateAssignee(@Param('id') id: string, @Body() assigneeId: string) {
-    return this.deliveryService.updateAssignee(id, assigneeId);
   }
 }

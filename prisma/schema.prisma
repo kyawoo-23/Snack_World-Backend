@@ -84,7 +84,7 @@ model ProductVariant {
 model Delivery {
   deliveryId     String          @id @default(uuid())
   deliveryCode   String
-  deliveryStatus String
+  deliveryStatus String          @default("PENDING")
   deliveryName   String
   createAt       DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
@@ -211,7 +211,7 @@ model CartProduct {
 model CustomerOrder {
   customerOrderId     String                @id @default(uuid())
   orderCode           String
-  orderStatus         String
+  orderStatus         String                @default("PENDING")
   totalPrice          Float
   deliveryPrice       Float
   deliveryAddress     String
@@ -225,7 +225,7 @@ model CustomerOrder {
 
 model DeliveryOrder {
   deliveryOrderId       String              @id @default(uuid())
-  deliveryOrderStatus   String
+  deliveryOrderStatus   String              @default("PENDING")
   deliveryName          String
   startAt               DateTime
   endAt                 DateTime
@@ -239,7 +239,7 @@ model CustomerOrderVendor {
   customerOrderVendorId      String                       @id @default(uuid())
   vendorName                 String
   vendorId                   String
-  customerOrderVendorStatus  String
+  customerOrderVendorStatus  String                       @default("PENDING")
   deliveryAddress            String
   customerOrderId            String
   customerId                 String
@@ -257,7 +257,7 @@ model CustomerOrderVendorProduct {
   vendorName                   String
   quantity                     Int
   price                        Float
-  orderVendorProductStatus     String
+  orderVendorProductStatus     String              @default("PENDING")
   productId                    String
   productVariantId             String
   customerOrderVendorId        String

@@ -21,6 +21,7 @@ import { CustomerModule } from './customer/customer.module';
 import { CustomerOrderModule } from './customer-order/customer-order.module';
 import { CustomerOrderVendorModule } from './customer-order-vendor/customer-order-vendor.module';
 import { CustomerOrderVendorProductModule } from './customer-order-vendor-product/customer-order-vendor-product.module';
+import { DeliveryModule } from './delivery/delivery.module';
 
 @Module({
   imports: [

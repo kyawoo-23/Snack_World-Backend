@@ -3,7 +3,6 @@ import { Prisma } from '@prisma/client';
 interface create {
   customerId: string;
   orderCode: string;
-  orderStatus: string;
   totalPrice: number;
   deliveryPrice: number;
   deliveryAddress: string;
@@ -11,7 +10,6 @@ interface create {
   vendors: {
     vendorId: string;
     vendorName: string;
-    customerOrderVendorStatus: string;
     deliveryAddress: string;
     products: {
       productId: string;
@@ -20,7 +18,6 @@ interface create {
       variantName: string;
       quantity: number;
       price: number;
-      orderVendorProductStatus: string;
     }[];
   }[];
 }
