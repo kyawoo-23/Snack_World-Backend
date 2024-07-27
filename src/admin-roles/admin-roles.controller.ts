@@ -1,12 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param } from '@nestjs/common';
 import { AdminRolesService } from './admin-roles.service';
 import { Prisma } from '@prisma/client';
 import { ApiTags } from '@nestjs/swagger';
@@ -37,10 +29,5 @@ export class AdminRolesController {
     @Body() updateAdminRoleDto: Prisma.AdminRoleUpdateInput,
   ) {
     return this.adminRolesService.update(id, updateAdminRoleDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.adminRolesService.remove(id);
   }
 }

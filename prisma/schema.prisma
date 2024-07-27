@@ -43,7 +43,7 @@ model Announcement {
 
 model AdminRole {
   adminRoleId String  @id @default(uuid())
-  name        String
+  name        String  @unique
   admin       Admin[]
 }
 
@@ -53,7 +53,7 @@ model Admin {
   email       String
   password    String
   adminRoleId String
-  isActive    Boolean
+  isActive    Boolean    @default(true)
   adminRole   AdminRole  @relation(fields: [adminRoleId], references: [adminRoleId])
   delivery    Delivery[]
   createAt    DateTime   @default(now())
@@ -118,7 +118,7 @@ model VendorUser {
   password         String
   vendorUserRoleId String
   vendorId         String
-  isActive         Boolean
+  isActive         Boolean          @default(true)
   vendorUserRole   VendorUserRole   @relation(fields: [vendorUserRoleId], references: [vendorUserRoleId])
   vendor           Vendor           @relation(fields: [vendorId], references: [vendorId])
   vendorPurchase   VendorPurchase[]
@@ -131,7 +131,7 @@ model Vendor {
   name                String
   image               String
   email               String
-  isActive            Boolean
+  isActive            Boolean               @default(false)
   createAt            DateTime              @default(now())
   updatedAt           DateTime              @updatedAt
   product             Product[]
@@ -173,7 +173,7 @@ model PurchaseProduct {
 
 model VendorUserRole {
   vendorUserRoleId String       @id @default(uuid())
-  name             String
+  name             String       @unique
   vendorUser       VendorUser[]
 }
 
@@ -277,7 +277,7 @@ model Product {
   promotion                  Boolean
   promotionPrice             Float
   stock                      Int
-  isActive                   Boolean
+  isActive                   Boolean                      @default(true)
   vendorId                   String
   categoryId                 String
   vendor                     Vendor                       @relation(fields: [vendorId], references: [vendorId])

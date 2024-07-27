@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, VendorUserRole } from '@prisma/client';
-import { find } from 'rxjs';
 import { Response } from 'src/common/interceptors/response.interceptor';
 import { DatabaseService } from 'src/database/database.service';
 

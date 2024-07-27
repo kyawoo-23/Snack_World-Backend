@@ -21,7 +21,6 @@ import { CustomerModule } from './customer/customer.module';
 import { CustomerOrderModule } from './customer-order/customer-order.module';
 import { CustomerOrderVendorModule } from './customer-order-vendor/customer-order-vendor.module';
 import { CustomerOrderVendorProductModule } from './customer-order-vendor-product/customer-order-vendor-product.module';
-import { DeliveryModule } from './delivery/delivery.module';
 import { DeliveryOrderModule } from './delivery-order/delivery-order.module';
 import { WishlistProductModule } from './wishlist-product/wishlist-product.module';
 import { CartProductModule } from './cart-product/cart-product.module';

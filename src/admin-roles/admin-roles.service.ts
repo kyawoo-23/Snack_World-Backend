@@ -50,28 +50,55 @@ export class AdminRolesService {
     }
   }
 
-  async findOne(id: string) {
-    return this._db.adminRole.findUnique({
-      where: {
-        adminRoleId: id,
-      },
-    });
+  async findOne(id: string): Promise<Response<AdminRole>> {
+    try {
+      const res = await this._db.adminRole.findUnique({
+        where: {
+          adminRoleId: id,
+        },
+      });
+
+      if (!res) {
+        return {
+          message: 'Admin role not found',
+        };
+      }
+
+      return {
+        message: 'Admin role fetched successfully',
+        data: res,
+      };
+    } catch (error) {
+      return {
+        isSuccess: false,
+        message: 'Failed to fetch admin role',
+        error: error.message,
+      };
+    }
   }
 
-  async update(id: string, updateAdminRoleDto: Prisma.AdminRoleUpdateInput) {
-    return this._db.adminRole.update({
-      where: {
-        adminRoleId: id,
-      },
-      data: updateAdminRoleDto,
-    });
-  }
+  async update(
+    id: string,
+    updateAdminRoleDto: Prisma.AdminRoleUpdateInput,
+  ): Promise<Response<AdminRole>> {
+    try {
+      const res = await this._db.adminRole.update({
+        where: {
+          adminRoleId: id,
+        },
+        data: updateAdminRoleDto,
+      });
 
-  async remove(id: string) {
-    return this._db.adminRole.delete({
-      where: {
-        adminRoleId: id,
-      },
-    });
+      return {
+        message: 'Admin role updated successfully',
+        data: res,
+      };
+    } catch (error) {
+      return {
+        isSuccess: false,
+        message: 'Failed to update admin role',
+        error: error.message,
+      };
+    }
   }
 }
