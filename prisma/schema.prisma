@@ -51,7 +51,7 @@ model Admin {
   adminId     String     @id @default(uuid())
   name        String
   email       String
-  password    String
+  password    String     @default("P@ssword1!!")
   adminRoleId String
   isActive    Boolean    @default(true)
   adminRole   AdminRole  @relation(fields: [adminRoleId], references: [adminRoleId])
@@ -115,7 +115,7 @@ model VendorUser {
   vendorUserId     String           @id @default(uuid())
   name             String
   email            String
-  password         String
+  password         String           @default("P@ssword1!!")
   vendorUserRoleId String
   vendorId         String
   isActive         Boolean          @default(true)
@@ -144,7 +144,7 @@ model Customer {
   customerId           String                 @id @default(uuid())
   name                 String
   email                String
-  password             String
+  password             String                 @default("P@ssword1!!")
   image                String
   phone                String
   address              String

@@ -30,7 +30,11 @@ export class VendorUserService {
 
   async findAll(): Promise<Response<VendorUser[]>> {
     try {
-      const res = await this._db.vendorUser.findMany();
+      const res = await this._db.vendorUser.findMany({
+        include: {
+          vendorUserRole: true,
+        },
+      });
       if (res.length === 0) {
         return {
           message: 'No vendor users found',
