@@ -10,18 +10,33 @@ export class ProductService {
 
   async create(createProductDto: CreateProductDto): Promise<Response<Product>> {
     try {
-      const { productImages, productVariants, ...rest } = createProductDto;
+      const { vendorId, categoryId, productImages, productVariants, ...rest } =
+        createProductDto;
       const res = await this._db.product.create({
         data: {
           ...rest,
+          vendor: {
+            connect: {
+              vendorId,
+            },
+          },
+          category: {
+            connect: {
+              categoryId,
+            },
+          },
           productImage: {
             create: productImages?.map((image) => ({
               image,
             })),
           },
           productVariant: {
-            connect: productVariants?.map((variant) => ({
-              productVariantId: variant,
+            create: productVariants?.map((variant) => ({
+              variant: {
+                connect: {
+                  variantId: variant,
+                },
+              },
             })),
           },
         },
@@ -31,7 +46,13 @@ export class ProductService {
         message: 'Product created successfully',
         data: res,
       };
-    } catch (error) {}
+    } catch (error) {
+      return {
+        isSuccess: false,
+        message: 'Failed to create product',
+        error: error.message,
+      };
+    }
   }
 
   async findAll(): Promise<Response<Product[]>> {

@@ -78,6 +78,16 @@ async function createCategories() {
   return prisma.category.createMany({ data: categoriesData });
 }
 
+async function createVendor() {
+  return prisma.vendor.create({
+    data: {
+      name: 'Snack Zone',
+      email: 'snackzone@gmail.com',
+      image: '',
+    },
+  });
+}
+
 async function main() {
   try {
     const adminRoles = await createAdminRoles();
@@ -85,6 +95,7 @@ async function main() {
     const superAdmin = await createSuperAdmin();
     const variants = await createVariants();
     const categories = await createCategories();
+    const vendor = await createVendor();
 
     console.log({
       adminRoles,
@@ -92,6 +103,7 @@ async function main() {
       vendorUserRoles,
       variants,
       categories,
+      vendor,
     });
   } catch (error) {
     console.error(error);

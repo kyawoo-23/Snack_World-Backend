@@ -35,7 +35,7 @@ model Announcement {
   content              String
   image                String
   type                 String
-  createAt             DateTime               @default(now())
+  createdAt            DateTime               @default(now())
   updatedAt            DateTime               @updatedAt
   announcementVendor   AnnouncementVendor[]
   announcementCustomer AnnouncementCustomer[]
@@ -56,7 +56,7 @@ model Admin {
   isActive    Boolean    @default(true)
   adminRole   AdminRole  @relation(fields: [adminRoleId], references: [adminRoleId])
   delivery    Delivery[]
-  createAt    DateTime   @default(now())
+  createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
 }
 
@@ -65,7 +65,7 @@ model Variant {
   name           String           @unique
   color          String           @unique
   productVariant ProductVariant[]
-  createAt       DateTime         @default(now())
+  createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
 }
 
@@ -86,7 +86,7 @@ model Delivery {
   deliveryCode   String
   deliveryStatus String          @default("PENDING")
   deliveryName   String
-  createAt       DateTime        @default(now())
+  createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
   completeAt     DateTime
   adminId        String
@@ -98,7 +98,7 @@ model Category {
   categoryId String    @id @default(uuid())
   name       String    @unique
   product    Product[]
-  createAt   DateTime  @default(now())
+  createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
 }
 
@@ -107,7 +107,7 @@ model ProductImage {
   image          String
   productId      String
   product        Product  @relation(fields: [productId], references: [productId])
-  createAt       DateTime @default(now())
+  createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 }
 
@@ -122,7 +122,7 @@ model VendorUser {
   vendorUserRole   VendorUserRole   @relation(fields: [vendorUserRoleId], references: [vendorUserRoleId])
   vendor           Vendor           @relation(fields: [vendorId], references: [vendorId])
   vendorPurchase   VendorPurchase[]
-  createAt         DateTime         @default(now())
+  createdAt        DateTime         @default(now())
   updatedAt        DateTime         @updatedAt
 }
 
@@ -132,7 +132,7 @@ model Vendor {
   image               String
   email               String
   isActive            Boolean               @default(false)
-  createAt            DateTime              @default(now())
+  createdAt           DateTime              @default(now())
   updatedAt           DateTime              @updatedAt
   product             Product[]
   customerOrderVendor CustomerOrderVendor[]
@@ -145,15 +145,15 @@ model Customer {
   name                 String
   email                String
   password             String                 @default("P@ssword1!!")
-  image                String
-  phone                String
-  address              String
+  image                String?
+  phone                String?
+  address              String?
   announcementCustomer AnnouncementCustomer[]
   wishListProduct      WishListProduct[]
   cartProduct          CartProduct[]
   customerOrder        CustomerOrder[]
   customerOrderVendor  CustomerOrderVendor[]
-  createAt             DateTime               @default(now())
+  createdAt            DateTime               @default(now())
   updatedAt            DateTime               @updatedAt
 }
 
@@ -167,7 +167,7 @@ model PurchaseProduct {
   product           Product        @relation(fields: [productId], references: [productId])
   vendorPurchaseId  String
   vendorPurchase    VendorPurchase @relation(fields: [vendorPurchaseId], references: [vendorPurchaseId])
-  createAt          DateTime       @default(now())
+  createdAt         DateTime       @default(now())
   updatedAt         DateTime       @updatedAt
 }
 
@@ -194,7 +194,7 @@ model VendorPurchase {
   vendorUserId     String
   vendorUser       VendorUser        @relation(fields: [vendorUserId], references: [vendorUserId])
   purchaseProduct  PurchaseProduct[]
-  createAt         DateTime          @default(now())
+  createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
 }
 
@@ -218,7 +218,7 @@ model CustomerOrder {
   deliveryAddress     String
   deliveryMethod      String
   customerId          String
-  createAt            DateTime              @default(now())
+  createdAt           DateTime              @default(now())
   updatedAt           DateTime              @updatedAt
   customer            Customer              @relation(fields: [customerId], references: [customerId])
   customerOrderVendor CustomerOrderVendor[]
@@ -274,9 +274,9 @@ model Product {
   primaryImage               String
   weight                     Float
   price                      Float
-  promotion                  Boolean
-  promotionPrice             Float
-  stock                      Int
+  promotion                  Boolean                      @default(false)
+  promotionPrice             Float?
+  stock                      Int                          @default(0)
   isActive                   Boolean                      @default(true)
   vendorId                   String
   categoryId                 String
@@ -288,6 +288,6 @@ model Product {
   wishListProduct            WishListProduct[]
   cartProduct                CartProduct[]
   customerOrderVendorProduct CustomerOrderVendorProduct[]
-  createAt                   DateTime                     @default(now())
+  createdAt                  DateTime                     @default(now())
   updatedAt                  DateTime                     @updatedAt
 }
