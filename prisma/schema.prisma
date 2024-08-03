@@ -73,6 +73,7 @@ model ProductVariant {
   productVariantId           String                       @id @default(uuid())
   variantId                  String
   productId                  String
+  stock                      Int                          @default(0)
   variant                    Variant                      @relation(fields: [variantId], references: [variantId])
   product                    Product                      @relation(fields: [productId], references: [productId])
   purchaseProduct            PurchaseProduct[]
@@ -276,7 +277,6 @@ model Product {
   price                      Float
   promotion                  Boolean                      @default(false)
   promotionPrice             Float?
-  stock                      Int                          @default(0)
   isActive                   Boolean                      @default(true)
   vendorId                   String
   categoryId                 String
