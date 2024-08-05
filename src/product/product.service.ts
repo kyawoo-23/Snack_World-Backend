@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateProductDto } from './dto/create-product.dto';
+import { CreateProductDto, UpdateProductDto } from './dto/create-product.dto';
 import { DatabaseService } from 'src/database/database.service';
 import { Response } from 'src/common/interceptors/response.interceptor';
 import { Prisma, Product } from '@prisma/client';
@@ -119,14 +119,17 @@ export class ProductService {
 
   async update(
     id: string,
-    updateProductDto: Prisma.ProductUpdateInput,
+    updateProductDto: UpdateProductDto,
   ): Promise<Response<Product>> {
     try {
+      const { categoryId, productVariants, ...productData } = updateProductDto;
+
       const res = await this._db.product.update({
-        where: {
-          productId: id,
+        where: { productId: id },
+        data: {
+          ...productData,
+          category: categoryId ? { connect: { categoryId } } : undefined,
         },
-        data: updateProductDto,
       });
 
       return {

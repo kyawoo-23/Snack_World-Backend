@@ -8,3 +8,10 @@ interface create {
 }
 
 export type CreateProductDto = create & Prisma.ProductCreateInput;
+
+interface update {
+  categoryId?: string;
+  productVariants?: string[];
+}
+
+export type UpdateProductDto = update & Prisma.ProductUpdateInput;
