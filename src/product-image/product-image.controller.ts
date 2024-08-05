@@ -16,6 +16,14 @@ import { Prisma } from '@prisma/client';
 export class ProductImageController {
   constructor(private readonly productImageService: ProductImageService) {}
 
+  @Post(':id')
+  add(
+    @Param('id') id: string,
+    @Body() createProductImageDto: { productImages: string[] },
+  ) {
+    return this.productImageService.create(id, createProductImageDto);
+  }
+
   @Patch(':id')
   update(
     @Param('id') id: string,

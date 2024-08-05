@@ -7,6 +7,35 @@ import { DatabaseService } from 'src/database/database.service';
 export class ProductImageService {
   constructor(private _db: DatabaseService) {}
 
+  async create(
+    id: string,
+    createProductImageDto: { productImages: string[] },
+  ): Promise<Response<ProductImage>> {
+    try {
+      for (const image of createProductImageDto.productImages) {
+        const res = await this._db.productImage.create({
+          data: {
+            image,
+            product: {
+              connect: {
+                productId: id,
+              },
+            },
+          },
+        });
+      }
+
+      return {
+        message: 'Product image added successfully',
+      };
+    } catch (error) {
+      return {
+        isSuccess: false,
+        message: 'Failed to create product image',
+      };
+    }
+  }
+
   async update(
     id: string,
     updateProductImageDto: Prisma.ProductImageUpdateInput,
