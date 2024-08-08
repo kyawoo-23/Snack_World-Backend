@@ -24,9 +24,13 @@ import { CustomerOrderVendorProductModule } from './customer-order-vendor-produc
 import { DeliveryOrderModule } from './delivery-order/delivery-order.module';
 import { WishlistProductModule } from './wishlist-product/wishlist-product.module';
 import { CartProductModule } from './cart-product/cart-product.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     DatabaseModule,
     AdminRolesModule,
     AdminModule,

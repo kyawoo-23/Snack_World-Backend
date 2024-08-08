@@ -40,4 +40,9 @@ export class VendorUserController {
   updatePassword(@Param('id') id: string, @Body() updatePasswordDto: string) {
     return this.vendorUserService.updatePassword(id, updatePasswordDto);
   }
+
+  @Patch(':id/reset-password')
+  resetPassword(@Param('id') id: string) {
+    return this.vendorUserService.resetPassword(id);
+  }
 }

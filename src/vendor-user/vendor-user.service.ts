@@ -173,4 +173,28 @@ export class VendorUserService {
       };
     }
   }
+
+  async resetPassword(id: string): Promise<Response<VendorUser>> {
+    try {
+      const res = await this._db.vendorUser.update({
+        where: {
+          vendorUserId: id,
+        },
+        data: {
+          password: process.env.DEFAULT_PASSWORD,
+        },
+      });
+
+      return {
+        message: 'Vendor user password reset successfully',
+        data: res,
+      };
+    } catch (error) {
+      return {
+        isSuccess: false,
+        message: 'Failed to reset vendor user password',
+        error: error.message,
+      };
+    }
+  }
 }
