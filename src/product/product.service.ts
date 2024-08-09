@@ -63,6 +63,9 @@ export class ProductService {
           productVariant: true,
           vendor: true,
         },
+        orderBy: {
+          createdAt: 'desc',
+        },
       });
 
       if (res.length === 0) {

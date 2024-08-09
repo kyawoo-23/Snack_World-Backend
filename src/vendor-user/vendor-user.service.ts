@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Prisma, VendorUser } from '@prisma/client';
 import { Response } from 'src/common/interceptors/response.interceptor';
 import { DatabaseService } from 'src/database/database.service';
+import { UpdateVendorUserDto } from 'src/vendor-user/dto/update-vendor-user.dto';
 
 @Injectable()
 export class VendorUserService {
@@ -33,6 +34,9 @@ export class VendorUserService {
       const res = await this._db.vendorUser.findMany({
         include: {
           vendorUserRole: true,
+        },
+        orderBy: {
+          createdAt: 'desc',
         },
       });
       if (res.length === 0) {
@@ -87,14 +91,23 @@ export class VendorUserService {
 
   async update(
     id: string,
-    updateVendorUserDto: Prisma.VendorUserUpdateInput,
+    updateVendorUserDto: UpdateVendorUserDto,
   ): Promise<Response<VendorUser>> {
     try {
+      const { vendorUserRoleId, ...rest } = updateVendorUserDto;
+
       const res = await this._db.vendorUser.update({
         where: {
           vendorUserId: id,
         },
-        data: updateVendorUserDto,
+        data: {
+          ...rest,
+          vendorUserRole: {
+            connect: {
+              vendorUserRoleId,
+            },
+          },
+        },
       });
 
       return {

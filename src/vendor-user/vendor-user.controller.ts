@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param } from '@nestjs/common';
 import { VendorUserService } from './vendor-user.service';
 import { Prisma } from '@prisma/client';
 import { ApiTags } from '@nestjs/swagger';
+import { UpdateVendorUserDto } from 'src/vendor-user/dto/update-vendor-user.dto';
 
 @ApiTags('vendor-user')
 @Controller('vendor-user')
@@ -26,7 +27,7 @@ export class VendorUserController {
   @Patch(':id')
   update(
     @Param('id') id: string,
-    @Body() updateVendorUserDto: Prisma.VendorUserUpdateInput,
+    @Body() updateVendorUserDto: UpdateVendorUserDto,
   ) {
     return this.vendorUserService.update(id, updateVendorUserDto);
   }
