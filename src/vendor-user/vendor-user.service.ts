@@ -1,19 +1,28 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma, VendorUser } from '@prisma/client';
+import { Prisma, Vendor, VendorUser } from '@prisma/client';
 import { Response } from 'src/common/interceptors/response.interceptor';
 import { DatabaseService } from 'src/database/database.service';
 import { UpdateVendorUserDto } from 'src/vendor-user/dto/update-vendor-user.dto';
+import * as bcrypt from 'bcryptjs';
+import { JwtService } from '@nestjs/jwt';
+import { AuthJwtPayload, AuthRequestDto } from 'src/common/auth.model';
 
 @Injectable()
 export class VendorUserService {
-  constructor(private readonly _db: DatabaseService) {}
+  constructor(
+    private readonly _db: DatabaseService,
+    private readonly _jwtService: JwtService,
+  ) {}
 
   async create(
     createVendorUserDto: Prisma.VendorUserCreateInput,
   ): Promise<Response<VendorUser>> {
     try {
       const res = await this._db.vendorUser.create({
-        data: createVendorUserDto,
+        data: {
+          ...createVendorUserDto,
+          password: await bcrypt.hash(process.env.DEFAULT_PASSWORD, 10),
+        },
       });
 
       return {
@@ -209,5 +218,86 @@ export class VendorUserService {
         error: error.message,
       };
     }
+  }
+
+  async profile(id: string): Promise<Response<VendorUser>> {
+    try {
+      const res = await this._db.vendorUser.findUnique({
+        where: {
+          vendorUserId: id,
+        },
+        include: {
+          vendorUserRole: true,
+        },
+      });
+
+      if (!res) {
+        return {
+          message: 'Vendor user not found',
+          data: null,
+        };
+      }
+
+      return {
+        message: 'Vendor user fetched successfully',
+        data: res,
+      };
+    } catch (error) {
+      return {
+        isSuccess: false,
+        message: 'Failed to fetch vendor user',
+        error: error.message,
+      };
+    }
+  }
+
+  async validateUser(
+    authRequestDto: AuthRequestDto,
+  ): Promise<Response<VendorUser>> {
+    try {
+      const { email, password } = authRequestDto;
+
+      const user = await this._db.vendorUser.findUnique({
+        where: { email },
+        include: {
+          vendorUserRole: true,
+        },
+      });
+
+      if (user && (await bcrypt.compare(password, user.password))) {
+        return {
+          data: user,
+        };
+      }
+
+      return {
+        isSuccess: false,
+        message: 'Invalid credentials',
+      };
+    } catch (error) {
+      return {
+        isSuccess: false,
+        message: 'Failed to validate user',
+        error: error.message,
+      };
+    }
+  }
+
+  async login(
+    user: VendorUser,
+  ): Promise<Response<AuthJwtPayload & { accessToken: string }>> {
+    const payload: AuthJwtPayload = {
+      email: user.email,
+      sub: user.vendorUserId,
+      role: user.vendorUserRoleId,
+    };
+    return {
+      isSuccess: true,
+      data: {
+        ...payload,
+        accessToken: this._jwtService.sign(payload),
+      },
+      message: 'Login successful',
+    };
   }
 }
