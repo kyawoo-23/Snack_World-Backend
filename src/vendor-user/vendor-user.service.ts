@@ -105,6 +105,10 @@ export class VendorUserService {
     try {
       const { vendorUserRoleId, ...rest } = updateVendorUserDto;
 
+      if (rest.password) {
+        rest.password = await bcrypt.hash(rest.password as string, 10);
+      }
+
       const res = await this._db.vendorUser.update({
         where: {
           vendorUserId: id,
@@ -287,6 +291,7 @@ export class VendorUserService {
     user: VendorUser,
   ): Promise<Response<AuthJwtPayload & { accessToken: string }>> {
     const payload: AuthJwtPayload = {
+      name: user.name,
       email: user.email,
       sub: user.vendorUserId,
       role: user.vendorUserRoleId,

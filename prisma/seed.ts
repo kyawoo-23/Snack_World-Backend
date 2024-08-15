@@ -79,11 +79,30 @@ async function createCategories() {
 }
 
 async function createVendor() {
-  return prisma.vendor.create({
+  const res = await prisma.vendor.create({
     data: {
       name: 'Snack Zone',
       email: 'snackzone@gmail.com',
-      image: '',
+      image:
+        'https://utfs.io/f/f1d4267d-5534-4e1a-9b77-1e647a9800d8-vxkpry.png',
+    },
+  });
+
+  const vendorUserRole = await prisma.vendorUserRole.findUnique({
+    where: { name: VendorUserRoleEnum.VENDOR_ADMINSTRATOR },
+  });
+
+  return prisma.vendorUser.create({
+    data: {
+      name: 'Snack Zone Admin',
+      email: 'snackzone-admin@gmail.com',
+      password: process.env.DEFAULT_PASSWORD,
+      vendor: { connect: { vendorId: res.vendorId } },
+      vendorUserRole: {
+        connect: {
+          vendorUserRoleId: vendorUserRole.vendorUserRoleId,
+        },
+      },
     },
   });
 }

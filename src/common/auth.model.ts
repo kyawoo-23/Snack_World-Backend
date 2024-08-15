@@ -4,6 +4,7 @@ export type AuthRequestDto = {
 };
 
 export type AuthJwtPayload = {
+  name: string;
   email: string;
   sub: string;
   role?: string;
