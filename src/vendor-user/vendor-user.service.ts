@@ -16,12 +16,15 @@ export class VendorUserService {
 
   async create(
     createVendorUserDto: Prisma.VendorUserCreateInput,
-  ): Promise<Response<VendorUser>> {
+  ): Promise<Response<Partial<VendorUser>>> {
     try {
       const res = await this._db.vendorUser.create({
         data: {
           ...createVendorUserDto,
           password: await bcrypt.hash(process.env.DEFAULT_PASSWORD, 10),
+        },
+        omit: {
+          password: true,
         },
       });
 
@@ -38,9 +41,12 @@ export class VendorUserService {
     }
   }
 
-  async findAll(): Promise<Response<VendorUser[]>> {
+  async findAll(): Promise<Response<Partial<VendorUser>[]>> {
     try {
       const res = await this._db.vendorUser.findMany({
+        omit: {
+          password: true,
+        },
         include: {
           vendorUserRole: true,
         },
@@ -67,9 +73,12 @@ export class VendorUserService {
     }
   }
 
-  async findOne(id: string): Promise<Response<VendorUser>> {
+  async findOne(id: string): Promise<Response<Partial<VendorUser>>> {
     try {
       const res = await this._db.vendorUser.findUnique({
+        omit: {
+          password: true,
+        },
         where: {
           vendorUserId: id,
         },
@@ -101,7 +110,7 @@ export class VendorUserService {
   async update(
     id: string,
     updateVendorUserDto: UpdateVendorUserDto,
-  ): Promise<Response<VendorUser>> {
+  ): Promise<Response<Partial<VendorUser>>> {
     try {
       const { vendorUserRoleId, ...rest } = updateVendorUserDto;
 
@@ -112,6 +121,9 @@ export class VendorUserService {
       const res = await this._db.vendorUser.update({
         where: {
           vendorUserId: id,
+        },
+        omit: {
+          password: true,
         },
         data: {
           ...rest,
@@ -136,7 +148,7 @@ export class VendorUserService {
     }
   }
 
-  async toggleStatus(id: string): Promise<Response<VendorUser>> {
+  async toggleStatus(id: string): Promise<Response<Partial<VendorUser>>> {
     try {
       const vendorUser = await this._db.vendorUser.findUnique({
         where: {
@@ -154,6 +166,9 @@ export class VendorUserService {
       const res = await this._db.vendorUser.update({
         where: {
           vendorUserId: id,
+        },
+        omit: {
+          password: true,
         },
         data: {
           isActive: !vendorUser.isActive,
@@ -176,9 +191,12 @@ export class VendorUserService {
   async updatePassword(
     id: string,
     updatedPasswordDto: string,
-  ): Promise<Response<VendorUser>> {
+  ): Promise<Response<Partial<VendorUser>>> {
     try {
       const res = await this._db.vendorUser.update({
+        omit: {
+          password: true,
+        },
         where: {
           vendorUserId: id,
         },
@@ -200,9 +218,12 @@ export class VendorUserService {
     }
   }
 
-  async resetPassword(id: string): Promise<Response<VendorUser>> {
+  async resetPassword(id: string): Promise<Response<Partial<VendorUser>>> {
     try {
       const res = await this._db.vendorUser.update({
+        omit: {
+          password: true,
+        },
         where: {
           vendorUserId: id,
         },
@@ -224,9 +245,12 @@ export class VendorUserService {
     }
   }
 
-  async profile(id: string): Promise<Response<VendorUser>> {
+  async profile(id: string): Promise<Response<Partial<VendorUser>>> {
     try {
       const res = await this._db.vendorUser.findUnique({
+        omit: {
+          password: true,
+        },
         where: {
           vendorUserId: id,
         },
