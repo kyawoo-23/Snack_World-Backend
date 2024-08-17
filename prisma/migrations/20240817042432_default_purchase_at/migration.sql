@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `VendorPurchase` MODIFY `purchaseAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3);

@@ -192,7 +192,7 @@ model WishListProduct {
 model VendorPurchase {
   vendorPurchaseId String            @id @default(uuid())
   purchaseCode     String
-  purchaseAt       DateTime
+  purchaseAt       DateTime          @default(now())
   vendorUserId     String
   vendorUser       VendorUser        @relation(fields: [vendorUserId], references: [vendorUserId])
   purchaseProduct  PurchaseProduct[]

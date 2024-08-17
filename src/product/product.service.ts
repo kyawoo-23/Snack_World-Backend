@@ -60,7 +60,11 @@ export class ProductService {
       const res = await this._db.product.findMany({
         include: {
           category: true,
-          productVariant: true,
+          productVariant: {
+            include: {
+              variant: true,
+            },
+          },
           vendor: true,
         },
         orderBy: {

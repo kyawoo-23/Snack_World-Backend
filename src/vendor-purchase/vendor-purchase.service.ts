@@ -23,17 +23,33 @@ export class VendorPurchaseService {
           },
           purchaseProduct: {
             create: purchaseProducts.map((purchaseProduct) => ({
-              ...purchaseProduct,
-              productVariant: {
-                connect: { id: purchaseProduct.productVariantId },
-              },
+              purchasePrice: purchaseProduct.purchasePrice,
+              quantity: purchaseProduct.quantity,
               product: {
-                connect: { id: purchaseProduct.productId },
+                connect: { productId: purchaseProduct.productId },
+              },
+              productVariant: {
+                connect: { productVariantId: purchaseProduct.productVariantId },
               },
             })),
           },
         },
+        include: {
+          purchaseProduct: true,
+        },
       });
+
+      // Update the stock quantity of the related ProductVariant
+      for (const product of purchaseProducts) {
+        await this._db.productVariant.update({
+          where: { productVariantId: product.productVariantId },
+          data: {
+            stock: {
+              increment: product.quantity, // Increment the stock by the quantity purchased
+            },
+          },
+        });
+      }
 
       return {
         message: 'Vendor purchase created successfully',
