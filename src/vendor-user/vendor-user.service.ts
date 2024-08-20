@@ -256,6 +256,7 @@ export class VendorUserService {
         },
         include: {
           vendorUserRole: true,
+          vendor: true,
         },
       });
 

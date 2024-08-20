@@ -24,11 +24,13 @@ export class VendorPurchaseController {
     return this.vendorPurchaseService.create(createVendorPurchaseDto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   findAll() {
     return this.vendorPurchaseService.findAll();
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.vendorPurchaseService.findOne(id);

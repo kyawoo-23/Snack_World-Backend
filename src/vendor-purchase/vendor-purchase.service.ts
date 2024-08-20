@@ -106,7 +106,11 @@ export class VendorPurchaseService {
           purchaseProduct: {
             include: {
               product: true,
-              productVariant: true,
+              productVariant: {
+                include: {
+                  variant: true,
+                },
+              },
             },
           },
           vendorUser: true,

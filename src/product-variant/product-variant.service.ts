@@ -1,5 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UseGuards } from '@nestjs/common';
 import { Prisma, ProductVariant } from '@prisma/client';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth/jwt-auth.guard';
 import { Response } from 'src/common/interceptors/response.interceptor';
 import { DatabaseService } from 'src/database/database.service';
 
@@ -7,6 +8,7 @@ import { DatabaseService } from 'src/database/database.service';
 export class ProductVariantService {
   constructor(private _db: DatabaseService) {}
 
+  @UseGuards(JwtAuthGuard)
   async update(
     id: string,
     updateProductVariantDto: Prisma.ProductVariantUpdateInput,

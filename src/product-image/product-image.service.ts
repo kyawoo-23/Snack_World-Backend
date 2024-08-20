@@ -1,5 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UseGuards } from '@nestjs/common';
 import { Prisma, ProductImage } from '@prisma/client';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth/jwt-auth.guard';
 import { Response } from 'src/common/interceptors/response.interceptor';
 import { DatabaseService } from 'src/database/database.service';
 
@@ -7,6 +8,7 @@ import { DatabaseService } from 'src/database/database.service';
 export class ProductImageService {
   constructor(private _db: DatabaseService) {}
 
+  @UseGuards(JwtAuthGuard)
   async create(
     id: string,
     createProductImageDto: { productImages: string[] },
@@ -36,6 +38,7 @@ export class ProductImageService {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   async update(
     id: string,
     updateProductImageDto: Prisma.ProductImageUpdateInput,
@@ -60,6 +63,7 @@ export class ProductImageService {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   async remove(id: string): Promise<Response<ProductImage>> {
     try {
       const res = await this._db.productImage.delete({
