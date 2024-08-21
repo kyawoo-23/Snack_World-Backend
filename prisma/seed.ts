@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import * as dotenv from 'dotenv';
+import * as bcrypt from 'bcryptjs';
 
 dotenv.config();
 
@@ -64,7 +65,7 @@ async function createSuperAdmin() {
     data: {
       name: AdminRoleEnum.SUPER_ADMIN,
       email: 'admin@gmail.com',
-      password: process.env.DEFAULT_PASSWORD,
+      password: await bcrypt.hash(process.env.DEFAULT_PASSWORD, 10),
       adminRole: { connect: { adminRoleId: superAdminRole.adminRoleId } },
     },
   });
@@ -96,7 +97,7 @@ async function createVendor() {
     data: {
       name: 'Snack Zone Admin',
       email: 'snackzone-admin@gmail.com',
-      password: process.env.DEFAULT_PASSWORD,
+      password: await bcrypt.hash(process.env.DEFAULT_PASSWORD, 10),
       vendor: { connect: { vendorId: res.vendorId } },
       vendorUserRole: {
         connect: {
