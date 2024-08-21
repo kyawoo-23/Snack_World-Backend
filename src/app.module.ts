@@ -25,11 +25,22 @@ import { DeliveryOrderModule } from './delivery-order/delivery-order.module';
 import { WishlistProductModule } from './wishlist-product/wishlist-product.module';
 import { CartProductModule } from './cart-product/cart-product.module';
 import { ConfigModule } from '@nestjs/config';
+import { MailerModule } from '@nestjs-modules/mailer';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+    }),
+    MailerModule.forRoot({
+      transport: {
+        host: 'sandbox.smtp.mailtrap.io',
+        port: 2525,
+        auth: {
+          user: '6cc7c19e54e30a',
+          pass: '571f8024642d7d',
+        },
+      },
     }),
     DatabaseModule,
     AdminRolesModule,

@@ -3,48 +3,67 @@ import { CreateAnnouncementDto } from './dto/create-announcement.dto';
 import { Response } from 'src/common/interceptors/response.interceptor';
 import { Announcement } from '@prisma/client';
 import { DatabaseService } from 'src/database/database.service';
+import { MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()
 export class AnnouncementService {
-  constructor(private _db: DatabaseService) {}
+  constructor(
+    private _db: DatabaseService,
+    private _mail: MailerService,
+  ) {}
 
   async create(
     createAnnouncementDto: CreateAnnouncementDto,
   ): Promise<Response<Announcement>> {
     try {
-      const { vendorId, customerId, ...rest } = createAnnouncementDto;
-      const res = await this._db.announcement.create({
-        data: {
-          ...rest,
-          announcementVendor: vendorId
-            ? {
-                create: {
-                  vendor: {
-                    connect: { vendorId },
-                  },
-                },
-              }
-            : undefined,
-          announcementCustomer: customerId
-            ? {
-                create: {
-                  customer: {
-                    connect: { customerId },
-                  },
-                },
-              }
-            : undefined,
-        },
+      await this._mail.sendMail({
+        from: 'Snack World <snackworld@gmail.com>',
+        to: createAnnouncementDto.to,
+        subject: createAnnouncementDto.title,
+        text: createAnnouncementDto.content,
       });
 
-      return {
-        message: 'Announcement created successfully',
-        data: res,
-      };
+      try {
+        const { vendorId, customerId, ...rest } = createAnnouncementDto;
+        const res = await this._db.announcement.create({
+          data: {
+            ...rest,
+            announcementVendor: vendorId
+              ? {
+                  create: {
+                    vendor: {
+                      connect: { vendorId },
+                    },
+                  },
+                }
+              : undefined,
+            announcementCustomer: customerId
+              ? {
+                  create: {
+                    customer: {
+                      connect: { customerId },
+                    },
+                  },
+                }
+              : undefined,
+          },
+        });
+
+        return {
+          message: 'Announcement created successfully',
+          data: res,
+        };
+      } catch (error) {
+        return {
+          isSuccess: false,
+          message: 'Failed to create announcement',
+          error: error.message,
+        };
+      }
     } catch (error) {
       return {
         isSuccess: false,
-        message: 'Failed to create announcement',
+        message: 'Something went wrong with email service',
         error: error.message,
       };
     }
