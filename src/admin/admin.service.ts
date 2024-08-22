@@ -46,6 +46,9 @@ export class AdminService {
         omit: {
           password: true,
         },
+        include: {
+          adminRole: true,
+        },
       });
 
       if (res.length === 0) {
