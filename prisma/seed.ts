@@ -6,14 +6,14 @@ dotenv.config();
 
 const prisma = new PrismaClient();
 
-enum AdminRoleEnum {
+export enum AdminRoleEnum {
   SUPER_ADMIN = 'Super Admin',
   MANAGER = 'Manager',
   ADMINSTRATOR = 'Administrator',
   OPERATION_STAFF = 'Operation Staff',
 }
 
-enum VendorUserRoleEnum {
+export enum VendorUserRoleEnum {
   VENDOR_ADMINSTRATOR = 'Vendor Administrator',
   VENDOR_OPERATION_STAFF = 'Vendor Operation Staff',
 }
@@ -95,8 +95,8 @@ async function createVendor() {
 
   return prisma.vendorUser.create({
     data: {
-      name: 'Snack Zone Admin',
-      email: 'snackzone-admin@gmail.com',
+      name: res.name,
+      email: res.email,
       password: await bcrypt.hash(process.env.DEFAULT_PASSWORD, 10),
       vendor: { connect: { vendorId: res.vendorId } },
       vendorUserRole: {

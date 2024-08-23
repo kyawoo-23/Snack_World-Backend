@@ -14,6 +14,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth/jwt-auth.guard';
 import { AuthRequestDto } from 'src/common/auth.model';
 import { UpdateAdminDto } from 'src/admin/dto/update-admin.dto';
+import { CreateAdminDto } from 'src/admin/dto/create-admin.dto';
 
 @ApiTags('admin')
 @Controller('admin')
@@ -22,7 +23,7 @@ export class AdminController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() createAdminDto: Prisma.AdminCreateInput) {
+  create(@Body() createAdminDto: CreateAdminDto) {
     return this.adminService.create(createAdminDto);
   }
 

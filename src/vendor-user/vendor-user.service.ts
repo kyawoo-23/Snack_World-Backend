@@ -112,10 +112,10 @@ export class VendorUserService {
     updateVendorUserDto: UpdateVendorUserDto,
   ): Promise<Response<Partial<VendorUser>>> {
     try {
-      const { vendorUserRoleId, ...rest } = updateVendorUserDto;
+      let { vendorUserRoleId, password, ...rest } = updateVendorUserDto;
 
-      if (rest.password) {
-        rest.password = await bcrypt.hash(rest.password as string, 10);
+      if (password) {
+        password = await bcrypt.hash(password as string, 10);
       }
 
       const res = await this._db.vendorUser.update({
@@ -127,6 +127,7 @@ export class VendorUserService {
         },
         data: {
           ...rest,
+          ...(password && { password }),
           vendorUserRole: {
             connect: {
               vendorUserRoleId,
@@ -201,7 +202,7 @@ export class VendorUserService {
           vendorUserId: id,
         },
         data: {
-          password: updatedPasswordDto,
+          password: await bcrypt.hash(updatedPasswordDto, 10),
         },
       });
 
@@ -228,7 +229,10 @@ export class VendorUserService {
           vendorUserId: id,
         },
         data: {
-          password: process.env.DEFAULT_PASSWORD,
+          password: await bcrypt.hash(
+            process.env.DEFAULT_PASSWORD as string,
+            10,
+          ),
         },
       });
 

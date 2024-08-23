@@ -18,6 +18,11 @@ export class VariantController {
     return this.variantService.findAll();
   }
 
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.variantService.findOne(id);
+  }
+
   @Patch(':id')
   update(
     @Param('id') id: string,

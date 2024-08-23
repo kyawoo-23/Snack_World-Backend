@@ -27,7 +27,7 @@ export class VariantService {
     }
   }
 
-  async findAll() {
+  async findAll(): Promise<Response<Variant[]>> {
     try {
       const res = await this._db.variant.findMany();
       if (res.length === 0) {
@@ -50,7 +50,37 @@ export class VariantService {
     }
   }
 
-  async update(id: string, updateVariantDto: Prisma.VariantUpdateInput) {
+  async findOne(id: string): Promise<Response<Variant>> {
+    try {
+      const res = await this._db.variant.findUnique({
+        where: {
+          variantId: id,
+        },
+      });
+      if (!res) {
+        return {
+          isSuccess: false,
+          message: 'Variant not found',
+        };
+      }
+
+      return {
+        message: 'Variant fetched successfully',
+        data: res,
+      };
+    } catch (error) {
+      return {
+        isSuccess: false,
+        message: 'Failed to fetch variant',
+        error: error.message,
+      };
+    }
+  }
+
+  async update(
+    id: string,
+    updateVariantDto: Prisma.VariantUpdateInput,
+  ): Promise<Response<Variant>> {
     try {
       const res = await this._db.variant.update({
         where: {

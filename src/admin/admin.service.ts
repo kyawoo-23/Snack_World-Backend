@@ -6,6 +6,7 @@ import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { AuthJwtPayload, AuthRequestDto } from 'src/common/auth.model';
 import { UpdateAdminDto } from 'src/admin/dto/update-admin.dto';
+import { CreateAdminDto } from 'src/admin/dto/create-admin.dto';
 
 @Injectable()
 export class AdminService {
@@ -15,16 +16,23 @@ export class AdminService {
   ) {}
 
   async create(
-    createAdminDto: Prisma.AdminCreateInput,
+    createAdminDto: CreateAdminDto,
   ): Promise<Response<Partial<Admin>>> {
     try {
+      const { adminRoleId, ...data } = createAdminDto;
+
       const res = await this._db.admin.create({
         omit: {
           password: true,
         },
         data: {
-          ...createAdminDto,
+          ...data,
           password: await bcrypt.hash(process.env.DEFAULT_PASSWORD, 10),
+          adminRole: {
+            connect: {
+              adminRoleId,
+            },
+          },
         },
       });
       return {
@@ -101,10 +109,10 @@ export class AdminService {
     updateAdminDto: UpdateAdminDto,
   ): Promise<Response<Partial<Admin>>> {
     try {
-      const { adminRoleId, ...rest } = updateAdminDto;
+      let { adminRoleId, password, ...rest } = updateAdminDto;
 
-      if (rest.password) {
-        rest.password = await bcrypt.hash(rest.password as string, 10);
+      if (password) {
+        password = await bcrypt.hash(password as string, 10);
       }
 
       const res = await this._db.admin.update({
@@ -116,6 +124,7 @@ export class AdminService {
         },
         data: {
           ...rest,
+          ...(password && { password }),
           adminRole: {
             connect: {
               adminRoleId,
@@ -192,7 +201,7 @@ export class AdminService {
           adminId: id,
         },
         data: {
-          password: updatePasswordDto,
+          password: await bcrypt.hash(updatePasswordDto, 10),
         },
       });
 
@@ -219,7 +228,10 @@ export class AdminService {
           adminId: id,
         },
         data: {
-          password: process.env.DEFAULT_PASSWORD,
+          password: await bcrypt.hash(
+            process.env.DEFAULT_PASSWORD as string,
+            10,
+          ),
         },
       });
 

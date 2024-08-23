@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { Prisma, Vendor } from '@prisma/client';
 import { Response } from 'src/common/interceptors/response.interceptor';
 import { DatabaseService } from 'src/database/database.service';
+import * as bcrypt from 'bcryptjs';
+import { VendorUserRoleEnum } from 'prisma/seed';
 
 @Injectable()
 export class VendorService {
@@ -14,6 +16,32 @@ export class VendorService {
       const res = await this._db.vendor.create({
         data: createVendorDto,
       });
+
+      const vendorUserRole = await this._db.vendorUserRole.findUnique({
+        where: { name: VendorUserRoleEnum.VENDOR_ADMINSTRATOR },
+      });
+
+      await this._db.vendorUser.create({
+        data: {
+          name: createVendorDto.name,
+          email: createVendorDto.email,
+          password: await bcrypt.hash(process.env.DEFAULT_PASSWORD, 10),
+          vendorUserRole: {
+            connect: {
+              vendorUserRoleId: vendorUserRole.vendorUserRoleId,
+            },
+          },
+          vendor: {
+            connect: {
+              vendorId: res.vendorId,
+            },
+          },
+        },
+        omit: {
+          password: true,
+        },
+      });
+
       return {
         message: 'Vendor created successfully',
         data: res,
