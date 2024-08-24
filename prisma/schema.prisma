@@ -130,7 +130,7 @@ model VendorUser {
 model Vendor {
   vendorId            String                @id @default(uuid())
   name                String
-  image               String
+  image               String?
   email               String
   isActive            Boolean               @default(false)
   createdAt           DateTime              @default(now())

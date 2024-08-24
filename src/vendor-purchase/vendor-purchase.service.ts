@@ -75,6 +75,9 @@ export class VendorPurchaseService {
           },
           vendorUser: true,
         },
+        orderBy: {
+          createdAt: 'desc',
+        },
       });
 
       if (res.length === 0) {

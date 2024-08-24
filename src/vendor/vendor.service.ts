@@ -83,6 +83,13 @@ export class VendorService {
         where: {
           vendorId: id,
         },
+        include: {
+          vendorUser: {
+            include: {
+              vendorUserRole: true,
+            },
+          },
+        },
       });
 
       if (!res) {
