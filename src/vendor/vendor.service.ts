@@ -88,6 +88,9 @@ export class VendorService {
             include: {
               vendorUserRole: true,
             },
+            omit: {
+              password: true,
+            },
           },
         },
       });

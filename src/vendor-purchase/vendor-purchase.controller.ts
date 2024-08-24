@@ -6,6 +6,7 @@ import {
   Param,
   UseGuards,
   Req,
+  Headers,
 } from '@nestjs/common';
 import { VendorPurchaseService } from './vendor-purchase.service';
 import { CreateVendorPurchaseDto } from 'src/vendor-purchase/dto/create-vendor-purchase.dto';
@@ -26,8 +27,8 @@ export class VendorPurchaseController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  findAll() {
-    return this.vendorPurchaseService.findAll();
+  findAll(@Headers('Vendor') vendorId: string) {
+    return this.vendorPurchaseService.findAll(vendorId);
   }
 
   @UseGuards(JwtAuthGuard)

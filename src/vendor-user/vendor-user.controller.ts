@@ -7,6 +7,7 @@ import {
   Param,
   UseGuards,
   Req,
+  Headers,
 } from '@nestjs/common';
 import { VendorUserService } from './vendor-user.service';
 import { Prisma } from '@prisma/client';
@@ -14,6 +15,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { UpdateVendorUserDto } from 'src/vendor-user/dto/update-vendor-user.dto';
 import { AuthRequestDto } from 'src/common/auth.model';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth/jwt-auth.guard';
+import { CreateVendorUserDto } from 'src/vendor-user/dto/create-vendor-user.dto';
 
 @ApiTags('vendor-user')
 @Controller('vendor-user')
@@ -22,14 +24,18 @@ export class VendorUserController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() createVendorUserDto: Prisma.VendorUserCreateInput) {
+  create(
+    @Headers('Vendor') vendorId: string,
+    @Body() createVendorUserDto: CreateVendorUserDto,
+  ) {
+    createVendorUserDto.vendorId = vendorId;
     return this.vendorUserService.create(createVendorUserDto);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  findAll() {
-    return this.vendorUserService.findAll();
+  findAll(@Headers('Vendor') vendorId: string) {
+    return this.vendorUserService.findAll(vendorId);
   }
 
   @UseGuards(JwtAuthGuard)

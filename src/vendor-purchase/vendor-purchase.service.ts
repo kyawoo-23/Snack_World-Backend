@@ -63,7 +63,7 @@ export class VendorPurchaseService {
     }
   }
 
-  async findAll(): Promise<Response<VendorPurchase[]>> {
+  async findAll(vendorId: string): Promise<Response<VendorPurchase[]>> {
     try {
       const res = await this._db.vendorPurchase.findMany({
         include: {
@@ -74,6 +74,11 @@ export class VendorPurchaseService {
             },
           },
           vendorUser: true,
+        },
+        where: {
+          vendorUser: {
+            vendorId,
+          },
         },
         orderBy: {
           createdAt: 'desc',

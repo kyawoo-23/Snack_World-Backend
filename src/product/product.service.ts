@@ -55,7 +55,7 @@ export class ProductService {
     }
   }
 
-  async findAll(): Promise<Response<Product[]>> {
+  async findAll(vendorId: string): Promise<Response<Product[]>> {
     try {
       const res = await this._db.product.findMany({
         include: {
@@ -66,6 +66,9 @@ export class ProductService {
             },
           },
           vendor: true,
+        },
+        where: {
+          vendorId,
         },
         orderBy: {
           createdAt: 'desc',

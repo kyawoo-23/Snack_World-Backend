@@ -41,7 +41,7 @@ export class VendorUserService {
     }
   }
 
-  async findAll(): Promise<Response<Partial<VendorUser>[]>> {
+  async findAll(vendorId: string): Promise<Response<Partial<VendorUser>[]>> {
     try {
       const res = await this._db.vendorUser.findMany({
         omit: {
@@ -52,6 +52,9 @@ export class VendorUserService {
         },
         orderBy: {
           createdAt: 'desc',
+        },
+        where: {
+          vendorId,
         },
       });
       if (res.length === 0) {

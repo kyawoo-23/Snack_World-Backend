@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   UseGuards,
+  Headers,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -20,13 +21,17 @@ export class ProductController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() createProductDto: CreateProductDto) {
+  create(
+    @Headers('Vendor') vendorId: string,
+    @Body() createProductDto: CreateProductDto,
+  ) {
+    createProductDto.vendorId = vendorId;
     return this.productService.create(createProductDto);
   }
 
   @Get()
-  findAll() {
-    return this.productService.findAll();
+  findAll(@Headers('Vendor') vendorId: string) {
+    return this.productService.findAll(vendorId);
   }
 
   @Get(':id')
