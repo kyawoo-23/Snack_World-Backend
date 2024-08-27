@@ -15,3 +15,8 @@ interface update {
 }
 
 export type UpdateProductDto = update & Prisma.ProductUpdateInput;
+
+export type PaginationDto = {
+  page: number;
+  limit: number;
+};

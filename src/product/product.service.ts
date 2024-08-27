@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { CreateProductDto, UpdateProductDto } from './dto/create-product.dto';
+import {
+  CreateProductDto,
+  PaginationDto,
+  UpdateProductDto,
+} from './dto/create-product.dto';
 import { DatabaseService } from 'src/database/database.service';
 import { Response } from 'src/common/interceptors/response.interceptor';
 import { Prisma, Product } from '@prisma/client';
@@ -69,6 +73,130 @@ export class ProductService {
         },
         where: {
           vendorId,
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+      });
+
+      if (res.length === 0) {
+        return {
+          data: [],
+          message: 'No products found',
+        };
+      }
+      return {
+        message: 'All products fetched successfully',
+        data: res,
+      };
+    } catch (error) {
+      return {
+        isSuccess: false,
+        message: 'Failed to fetch products',
+        error: error.message,
+      };
+    }
+  }
+
+  async findAllPublic(
+    paginationDto: PaginationDto,
+  ): Promise<Response<Product[]>> {
+    try {
+      const res = await this._db.product.findMany({
+        include: {
+          category: true,
+          productVariant: {
+            include: {
+              variant: true,
+            },
+          },
+          vendor: true,
+        },
+        where: {
+          isActive: true,
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+        skip: (paginationDto.page - 1) * paginationDto.limit,
+        take: paginationDto.limit,
+      });
+
+      if (res.length === 0) {
+        return {
+          data: [],
+          message: 'No products found',
+        };
+      }
+      return {
+        message: 'All products fetched successfully',
+        data: res,
+      };
+    } catch (error) {
+      return {
+        isSuccess: false,
+        message: 'Failed to fetch products',
+        error: error.message,
+      };
+    }
+  }
+
+  async findFeatured(): Promise<Response<Product[]>> {
+    try {
+      const res = await this._db.product.findMany({
+        include: {
+          category: true,
+          productVariant: {
+            include: {
+              variant: true,
+            },
+          },
+          vendor: true,
+        },
+        where: {
+          isFeatured: true,
+          isActive: true,
+        },
+        orderBy: {
+          updatedAt: 'desc',
+        },
+      });
+
+      if (res.length === 0) {
+        return {
+          data: [],
+          message: 'No featured products found',
+        };
+      }
+      return {
+        message: 'All featured products fetched successfully',
+        data: res,
+      };
+    } catch (error) {
+      return {
+        isSuccess: false,
+        message: 'Failed to fetch featured products',
+        error: error.message,
+      };
+    }
+  }
+
+  async search(query: string): Promise<Response<Product[]>> {
+    try {
+      const res = await this._db.product.findMany({
+        include: {
+          category: true,
+          productVariant: {
+            include: {
+              variant: true,
+            },
+          },
+          vendor: true,
+        },
+        where: {
+          name: {
+            contains: query,
+          },
         },
         orderBy: {
           createdAt: 'desc',

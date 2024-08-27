@@ -278,6 +278,7 @@ model Product {
   promotion                  Boolean                      @default(false)
   promotionPrice             Float?
   isActive                   Boolean                      @default(true)
+  isFeatured                 Boolean                      @default(false)
   vendorId                   String
   categoryId                 String
   vendor                     Vendor                       @relation(fields: [vendorId], references: [vendorId])
