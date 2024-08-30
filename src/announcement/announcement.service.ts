@@ -16,7 +16,25 @@ export class AnnouncementService {
     createAnnouncementDto: CreateAnnouncementDto,
   ): Promise<Response<Announcement>> {
     try {
-      const { vendorId, customerId, ...rest } = createAnnouncementDto;
+      let { vendorId, customerId, ...rest } = createAnnouncementDto;
+
+      if (createAnnouncementDto.type === 'ALL') {
+        vendorId = await this._db.vendor
+          .findMany({
+            select: {
+              vendorId: true,
+            },
+          })
+          .then((res) => res.map((vendor) => vendor.vendorId));
+
+        customerId = await this._db.customer
+          .findMany({
+            select: {
+              customerId: true,
+            },
+          })
+          .then((res) => res.map((customer) => customer.customerId));
+      }
 
       const vendorPromises = vendorId.map(async (id) => {
         const vendor = await this._db.vendor.findUnique({
