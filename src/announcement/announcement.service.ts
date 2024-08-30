@@ -127,6 +127,9 @@ export class AnnouncementService {
               },
             },
           },
+          orderBy: {
+            createdAt: 'desc',
+          },
         });
         return {
           message: 'All announcements fetched successfully',
