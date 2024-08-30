@@ -1,11 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { Customer, Prisma } from '@prisma/client';
+import { AuthJwtPayload, AuthRequestDto } from 'src/common/auth.model';
 import { Response } from 'src/common/interceptors/response.interceptor';
+import * as bcrypt from 'bcryptjs';
 import { DatabaseService } from 'src/database/database.service';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class CustomerService {
-  constructor(private _db: DatabaseService) {}
+  constructor(
+    private _db: DatabaseService,
+    private readonly _jwtService: JwtService,
+  ) {}
 
   async create(
     createCustomerDto: Prisma.CustomerCreateInput,
@@ -97,5 +103,52 @@ export class CustomerService {
         error: error.message,
       };
     }
+  }
+
+  async validateUser(
+    authRequestDto: AuthRequestDto,
+  ): Promise<Response<Customer>> {
+    try {
+      const { email, password } = authRequestDto;
+
+      const user = await this._db.customer.findUnique({
+        where: { email },
+      });
+
+      if (user && (await bcrypt.compare(password, user.password))) {
+        return {
+          data: user,
+        };
+      }
+
+      return {
+        isSuccess: false,
+        message: 'Invalid credentials',
+      };
+    } catch (error) {
+      return {
+        isSuccess: false,
+        message: 'Failed to validate user',
+        error: error.message,
+      };
+    }
+  }
+
+  async login(
+    user: Customer,
+  ): Promise<Response<AuthJwtPayload & { accessToken: string }>> {
+    const payload: AuthJwtPayload = {
+      name: user.name,
+      email: user.email,
+      sub: user.customerId,
+    };
+    return {
+      isSuccess: true,
+      data: {
+        ...payload,
+        accessToken: this._jwtService.sign(payload),
+      },
+      message: 'Login successful',
+    };
   }
 }

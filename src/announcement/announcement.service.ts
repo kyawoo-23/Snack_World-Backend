@@ -16,54 +16,96 @@ export class AnnouncementService {
     createAnnouncementDto: CreateAnnouncementDto,
   ): Promise<Response<Announcement>> {
     try {
-      await this._mail.sendMail({
-        from: 'Snack World <snackworld@gmail.com>',
-        to: createAnnouncementDto.to,
-        subject: createAnnouncementDto.title,
-        text: createAnnouncementDto.content,
-      });
+      const { vendorId, customerId, ...rest } = createAnnouncementDto;
 
-      try {
-        const { vendorId, customerId, ...rest } = createAnnouncementDto;
-        const res = await this._db.announcement.create({
-          data: {
-            ...rest,
-            announcementVendor: vendorId
-              ? {
-                  create: {
-                    vendor: {
-                      connect: { vendorId },
-                    },
-                  },
-                }
-              : undefined,
-            announcementCustomer: customerId
-              ? {
-                  create: {
-                    customer: {
-                      connect: { customerId },
-                    },
-                  },
-                }
-              : undefined,
+      const vendorPromises = vendorId.map(async (id) => {
+        const vendor = await this._db.vendor.findUnique({
+          where: {
+            vendorId: id,
           },
         });
 
+        if (!vendor) {
+          throw new Error(`Vendor with id ${id} not found`);
+        }
+
+        await this._mail.sendMail({
+          from: 'Snack World <snackworld@gmail.com>',
+          to: vendor.email,
+          subject: createAnnouncementDto.title,
+          text: createAnnouncementDto.content,
+        });
+
         return {
-          message: 'Announcement created successfully',
-          data: res,
+          vendorId: id,
+          vendorEmail: vendor.email,
         };
-      } catch (error) {
+      });
+
+      await Promise.all(vendorPromises);
+
+      const customerPromises = customerId.map(async (id) => {
+        const customer = await this._db.customer.findUnique({
+          where: {
+            customerId: id,
+          },
+        });
+
+        if (!customer) {
+          throw new Error(`Customer with id ${id} not found`);
+        }
+
+        await this._mail.sendMail({
+          from: 'Snack World <snackworld@gmail.com>',
+          to: customer.email,
+          subject: createAnnouncementDto.title,
+          text: createAnnouncementDto.content,
+        });
+
         return {
-          isSuccess: false,
-          message: 'Failed to create announcement',
-          error: error.message,
+          customerId: id,
+          customerEmail: customer.email,
         };
-      }
+      });
+
+      await Promise.all(customerPromises);
+
+      const announcementData = {
+        ...rest,
+        announcementVendor:
+          vendorId.length > 0
+            ? {
+                create: vendorId.map((id) => ({
+                  vendor: {
+                    connect: { vendorId: id },
+                  },
+                })),
+              }
+            : undefined,
+        announcementCustomer:
+          customerId.length > 0
+            ? {
+                create: customerId.map((id) => ({
+                  customer: {
+                    connect: { customerId: id },
+                  },
+                })),
+              }
+            : undefined,
+      };
+
+      const res = await this._db.announcement.create({
+        data: announcementData,
+      });
+
+      return {
+        message: 'Announcement created successfully',
+        data: res,
+      };
     } catch (error) {
       return {
         isSuccess: false,
-        message: 'Something went wrong with email service',
+        message: 'Failed to create announcement',
         error: error.message,
       };
     }
@@ -72,7 +114,20 @@ export class AnnouncementService {
   async findAll(type: string): Promise<Response<Announcement[]>> {
     try {
       if (!type) {
-        const res = await this._db.announcement.findMany();
+        const res = await this._db.announcement.findMany({
+          include: {
+            announcementCustomer: {
+              include: {
+                customer: true,
+              },
+            },
+            announcementVendor: {
+              include: {
+                vendor: true,
+              },
+            },
+          },
+        });
         return {
           message: 'All announcements fetched successfully',
           data: res,
@@ -82,6 +137,18 @@ export class AnnouncementService {
       const res = await this._db.announcement.findMany({
         where: {
           type,
+        },
+        include: {
+          announcementCustomer: {
+            include: {
+              customer: true,
+            },
+          },
+          announcementVendor: {
+            include: {
+              vendor: true,
+            },
+          },
         },
       });
 

@@ -1,12 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import {
-  CreateProductDto,
-  PaginationDto,
-  UpdateProductDto,
-} from './dto/create-product.dto';
+import { CreateProductDto, UpdateProductDto } from './dto/create-product.dto';
 import { DatabaseService } from 'src/database/database.service';
 import { Response } from 'src/common/interceptors/response.interceptor';
-import { Prisma, Product } from '@prisma/client';
+import { Product } from '@prisma/client';
 
 @Injectable()
 export class ProductService {
@@ -98,9 +94,8 @@ export class ProductService {
     }
   }
 
-  async findAllPublic(
-    paginationDto: PaginationDto,
-  ): Promise<Response<Product[]>> {
+  async findAllPublic(index: number): Promise<Response<Product[]>> {
+    const limit = 8;
     try {
       const res = await this._db.product.findMany({
         include: {
@@ -118,8 +113,8 @@ export class ProductService {
         orderBy: {
           createdAt: 'desc',
         },
-        skip: (paginationDto.page - 1) * paginationDto.limit,
-        take: paginationDto.limit,
+        skip: index * limit,
+        take: limit,
       });
 
       if (res.length === 0) {
@@ -230,7 +225,11 @@ export class ProductService {
         },
         include: {
           category: true,
-          productVariant: true,
+          productVariant: {
+            include: {
+              variant: true,
+            },
+          },
           vendor: true,
           productImage: true,
         },

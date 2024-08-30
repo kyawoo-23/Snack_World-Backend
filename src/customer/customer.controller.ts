@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param } from '@nestjs/common';
 import { CustomerService } from './customer.service';
 import { ApiTags } from '@nestjs/swagger';
 import { Prisma } from '@prisma/client';
+import { AuthRequestDto } from 'src/common/auth.model';
 
 @ApiTags('customer')
 @Controller('customer')
@@ -29,5 +30,14 @@ export class CustomerController {
     @Body() updateCustomerDto: Prisma.CustomerUpdateInput,
   ) {
     return this.customerService.update(id, updateCustomerDto);
+  }
+
+  @Post('login')
+  async login(@Body() authRequestDto: AuthRequestDto) {
+    const user = await this.customerService.validateUser(authRequestDto);
+    if (user.isSuccess === false) {
+      return user;
+    }
+    return this.customerService.login(user.data);
   }
 }

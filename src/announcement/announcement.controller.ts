@@ -22,7 +22,7 @@ export class AnnouncementController {
   }
 
   @Get()
-  findAll(@Body() { type }: { type: string }) {
+  findAll(@Body() { type }: { type?: string }) {
     return this.announcementService.findAll(type);
   }
 

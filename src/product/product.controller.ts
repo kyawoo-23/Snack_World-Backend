@@ -9,7 +9,7 @@ import {
   Headers,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
-import { CreateProductDto, PaginationDto } from './dto/create-product.dto';
+import { CreateProductDto } from './dto/create-product.dto';
 import { Prisma } from '@prisma/client';
 import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth/jwt-auth.guard';
@@ -34,9 +34,9 @@ export class ProductController {
     return this.productService.findAll(vendorId);
   }
 
-  @Get('public')
-  findAllPublic(@Body() paginationDto: PaginationDto) {
-    return this.productService.findAllPublic(paginationDto);
+  @Get('public/:index')
+  findAllPublic(@Param('index') index: string) {
+    return this.productService.findAllPublic(+index);
   }
 
   @Get('featured')
