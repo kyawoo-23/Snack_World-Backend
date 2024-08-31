@@ -77,7 +77,6 @@ model ProductVariant {
   variant                    Variant                      @relation(fields: [variantId], references: [variantId])
   product                    Product                      @relation(fields: [productId], references: [productId])
   purchaseProduct            PurchaseProduct[]
-  wishListProduct            WishListProduct[]
   cartProduct                CartProduct[]
   customerOrderVendorProduct CustomerOrderVendorProduct[]
 }
@@ -179,13 +178,11 @@ model VendorUserRole {
 }
 
 model WishListProduct {
-  wishListProductId String         @id @default(uuid())
+  wishListProductId String   @id @default(uuid())
   productId         String
-  productVariantId  String
   customerId        String
-  product           Product        @relation(fields: [productId], references: [productId])
-  productVariant    ProductVariant @relation(fields: [productVariantId], references: [productVariantId])
-  customer          Customer       @relation(fields: [customerId], references: [customerId])
+  product           Product  @relation(fields: [productId], references: [productId])
+  customer          Customer @relation(fields: [customerId], references: [customerId])
 }
 
 model VendorPurchase {

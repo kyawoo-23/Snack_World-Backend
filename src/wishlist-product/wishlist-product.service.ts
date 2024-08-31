@@ -12,10 +12,14 @@ export class WishlistProductService {
     createWishlistProductDto: CreateWishlistProductDto,
   ): Promise<Response<WishListProduct>> {
     try {
-      const { customerId, ...data } = createWishlistProductDto;
+      const { customerId, productId } = createWishlistProductDto;
       const res = await this._db.wishListProduct.create({
         data: {
-          ...data,
+          product: {
+            connect: {
+              productId,
+            },
+          },
           customer: {
             connect: {
               customerId,

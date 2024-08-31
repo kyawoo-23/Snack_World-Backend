@@ -3,10 +3,14 @@ import { CreateProductDto, UpdateProductDto } from './dto/create-product.dto';
 import { DatabaseService } from 'src/database/database.service';
 import { Response } from 'src/common/interceptors/response.interceptor';
 import { Product } from '@prisma/client';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class ProductService {
-  constructor(private _db: DatabaseService) {}
+  constructor(
+    private _db: DatabaseService,
+    private _jwt: JwtService,
+  ) {}
 
   async create(createProductDto: CreateProductDto): Promise<Response<Product>> {
     try {
@@ -94,7 +98,12 @@ export class ProductService {
     }
   }
 
-  async findAllPublic(index: number): Promise<Response<Product[]>> {
+  async findAllPublic(
+    index: number,
+    token?: string,
+  ): Promise<Response<Product[]>> {
+    const customerId = token ? this._jwt.decode(token).sub : null;
+
     const limit = 8;
     try {
       const res = await this._db.product.findMany({
@@ -105,6 +114,13 @@ export class ProductService {
               variant: true,
             },
           },
+          wishListProduct: customerId
+            ? {
+                where: {
+                  customerId,
+                },
+              }
+            : false,
           vendor: true,
         },
         where: {

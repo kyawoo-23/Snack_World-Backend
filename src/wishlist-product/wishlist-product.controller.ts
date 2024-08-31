@@ -3,13 +3,15 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { WishlistProductService } from './wishlist-product.service';
 import { CreateWishlistProductDto } from './dto/create-wishlist-product.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth/jwt-auth.guard';
 
 @ApiTags('wishlist-product')
 @Controller('wishlist-product')
@@ -18,8 +20,13 @@ export class WishlistProductController {
     private readonly wishlistProductService: WishlistProductService,
   ) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() createWishlistProductDto: CreateWishlistProductDto) {
+  create(
+    @Req() req,
+    @Body() createWishlistProductDto: CreateWishlistProductDto,
+  ) {
+    createWishlistProductDto.customerId = req.user.id;
     return this.wishlistProductService.create(createWishlistProductDto);
   }
 

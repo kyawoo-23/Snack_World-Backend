@@ -7,12 +7,14 @@ import {
   Param,
   UseGuards,
   Headers,
+  Query,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { Prisma } from '@prisma/client';
 import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth/jwt-auth.guard';
+import { CustomerService } from 'src/customer/customer.service';
 
 @ApiTags('product')
 @Controller('product')
@@ -35,8 +37,11 @@ export class ProductController {
   }
 
   @Get('public/:index')
-  findAllPublic(@Param('index') index: string) {
-    return this.productService.findAllPublic(+index);
+  async findAllPublic(
+    @Param('index') index: string,
+    @Query('token') token?: string,
+  ) {
+    return this.productService.findAllPublic(+index, token);
   }
 
   @Get('featured')
