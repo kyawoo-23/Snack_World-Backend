@@ -5,7 +5,7 @@ import {
   Body,
   Patch,
   Param,
-  Delete,
+  Headers,
 } from '@nestjs/common';
 import { VendorService } from './vendor.service';
 import { Prisma } from '@prisma/client';
@@ -29,6 +29,17 @@ export class VendorController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.vendorService.findOne(id);
+  }
+
+  @Patch('update-logo')
+  updateLogo(
+    @Headers('Vendor') vendorId: string,
+    @Body() { image }: { image: string },
+  ) {
+    return this.vendorService.updateLogo({
+      id: vendorId,
+      image,
+    });
   }
 
   @Patch(':id')

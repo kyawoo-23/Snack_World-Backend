@@ -16,9 +16,13 @@ export class CustomerService {
   async create(
     createCustomerDto: Prisma.CustomerCreateInput,
   ): Promise<Response<Customer>> {
+    const { password, ...rest } = createCustomerDto;
     try {
       const res = await this._db.customer.create({
-        data: createCustomerDto,
+        data: {
+          ...rest,
+          password: await bcrypt.hash(password, 10),
+        },
       });
       return {
         message: 'Customer created successfully',
@@ -26,6 +30,7 @@ export class CustomerService {
       };
     } catch (error) {
       return {
+        isSuccess: false,
         message: 'Error creating customer',
         error: error.message,
       };

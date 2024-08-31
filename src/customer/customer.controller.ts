@@ -10,8 +10,13 @@ export class CustomerController {
   constructor(private readonly customerService: CustomerService) {}
 
   @Post()
-  create(@Body() createCustomerDto: Prisma.CustomerCreateInput) {
-    return this.customerService.create(createCustomerDto);
+  async create(@Body() createCustomerDto: Prisma.CustomerCreateInput) {
+    const user = await this.customerService.create(createCustomerDto);
+    if (user.isSuccess === false) {
+      return user;
+    }
+    console.log('HELLOOOOOOOOOOOO', user);
+    return this.customerService.login(user.data);
   }
 
   @Get()

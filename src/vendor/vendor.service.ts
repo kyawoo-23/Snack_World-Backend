@@ -176,4 +176,34 @@ export class VendorService {
       };
     }
   }
+
+  async updateLogo({
+    id,
+    image,
+  }: {
+    id: string;
+    image: string;
+  }): Promise<Response<Vendor>> {
+    try {
+      const res = await this._db.vendor.update({
+        where: {
+          vendorId: id,
+        },
+        data: {
+          image,
+        },
+      });
+
+      return {
+        message: 'Vendor image updated successfully',
+        data: res,
+      };
+    } catch (error) {
+      return {
+        isSuccess: false,
+        message: 'Failed to update vendor image',
+        data: null,
+      };
+    }
+  }
 }
