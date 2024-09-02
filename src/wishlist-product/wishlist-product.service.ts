@@ -46,6 +46,14 @@ export class WishlistProductService {
         where: {
           customerId: id,
         },
+        include: {
+          product: {
+            include: {
+              category: true,
+              vendor: true,
+            },
+          },
+        },
       });
 
       if (res.length === 0) {

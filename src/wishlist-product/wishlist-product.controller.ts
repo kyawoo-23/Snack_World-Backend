@@ -30,9 +30,10 @@ export class WishlistProductController {
     return this.wishlistProductService.create(createWishlistProductDto);
   }
 
-  @Get(':id')
-  findAll(@Param('id') id: string) {
-    return this.wishlistProductService.findAll(id);
+  @UseGuards(JwtAuthGuard)
+  @Get()
+  findAll(@Req() req) {
+    return this.wishlistProductService.findAll(req.user.id);
   }
 
   @Delete(':id')
