@@ -36,6 +36,12 @@ export class WishlistProductController {
     return this.wishlistProductService.findAll(req.user.id);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Get(':id')
+  findOne(@Req() req, @Param('id') id: string) {
+    return this.wishlistProductService.findOne(req.user.id, id);
+  }
+
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.wishlistProductService.remove(id);

@@ -75,6 +75,37 @@ export class WishlistProductService {
     }
   }
 
+  async findOne(
+    customerId: string,
+    productId: string,
+  ): Promise<Response<WishListProduct>> {
+    try {
+      const res = await this._db.wishListProduct.findFirst({
+        where: {
+          customerId,
+          productId,
+        },
+      });
+      console.log('HIII', res);
+
+      if (!res) {
+        return {
+          message: 'Wishlist product not found',
+        };
+      }
+      return {
+        message: 'Wishlist product fetched successfully',
+        data: res,
+      };
+    } catch (error) {
+      return {
+        isSuccess: false,
+        message: 'Failed to fetch wishlist product',
+        error: error.message,
+      };
+    }
+  }
+
   async remove(id: string): Promise<Response<WishListProduct>> {
     try {
       const res = await this._db.wishListProduct.delete({

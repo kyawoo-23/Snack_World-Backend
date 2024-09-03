@@ -98,12 +98,7 @@ export class ProductService {
     }
   }
 
-  async findAllPublic(
-    index: number,
-    token?: string,
-  ): Promise<Response<Product[]>> {
-    const customerId = token ? this._jwt.decode(token).sub : null;
-
+  async findAllPublic(index: number): Promise<Response<Product[]>> {
     const limit = 8;
     try {
       const res = await this._db.product.findMany({
@@ -114,13 +109,6 @@ export class ProductService {
               variant: true,
             },
           },
-          wishListProduct: customerId
-            ? {
-                where: {
-                  customerId,
-                },
-              }
-            : false,
           vendor: true,
         },
         where: {
