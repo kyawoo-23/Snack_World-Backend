@@ -14,6 +14,32 @@ export class CartProductService {
     try {
       const { customerId, productId, productVarinatId, ...data } =
         createCartProductDto;
+
+      // Check if the cart product already exists
+      const existingCartProduct = await this._db.cartProduct.findFirst({
+        where: {
+          customerId,
+          productId,
+          productVariantId: productVarinatId,
+        },
+      });
+
+      if (existingCartProduct) {
+        const res = await this._db.cartProduct.update({
+          where: {
+            cartProductId: existingCartProduct.cartProductId,
+          },
+          data: {
+            quantity: existingCartProduct.quantity + data.quantity,
+          },
+        });
+
+        return {
+          message: 'Cart quantity increased successfully',
+          data: res,
+        };
+      }
+
       const res = await this._db.cartProduct.create({
         data: {
           ...data,
@@ -56,7 +82,11 @@ export class CartProductService {
         },
         include: {
           product: true,
-          productVariant: true,
+          productVariant: {
+            include: {
+              variant: true,
+            },
+          },
         },
       });
 
@@ -74,6 +104,27 @@ export class CartProductService {
       return {
         isSuccess: false,
         message: 'Failed to fetch cart products',
+        error: error.message,
+      };
+    }
+  }
+
+  async count(id: string): Promise<Response<number>> {
+    try {
+      const res = await this._db.cartProduct.count({
+        where: {
+          customerId: id,
+        },
+      });
+
+      return {
+        message: 'Cart products count fetched successfully',
+        data: res,
+      };
+    } catch (error) {
+      return {
+        isSuccess: false,
+        message: 'Failed to fetch cart products count',
         error: error.message,
       };
     }
