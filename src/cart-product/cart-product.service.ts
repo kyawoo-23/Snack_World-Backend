@@ -81,7 +81,11 @@ export class CartProductService {
           customerId: id,
         },
         include: {
-          product: true,
+          product: {
+            include: {
+              vendor: true,
+            },
+          },
           productVariant: {
             include: {
               variant: true,
