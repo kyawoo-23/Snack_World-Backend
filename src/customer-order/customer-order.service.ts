@@ -111,58 +111,6 @@ export class CustomerOrderService {
     }
   }
 
-  // async create(
-  //   createCustomerOrderDto: CreateCustomerOrderDto,
-  // ): Promise<Response<CustomerOrder>> {
-  //   try {
-  //     const { vendors, customerId, ...data } = createCustomerOrderDto;
-  //     const res = await this._db.customerOrder.create({
-  //       data: {
-  //         ...data,
-  //         customer: {
-  //           connect: { customerId },
-  //         },
-  //         customerOrderVendor: {
-  //           create: vendors.map(({ vendorId, products, ...vendor }) => ({
-  //             ...vendor,
-  //             vendor: {
-  //               connect: { vendorId },
-  //             },
-  //             customer: {
-  //               connect: { customerId },
-  //             },
-  //             customerOrderVendorProduct: {
-  //               create: products.map(
-  //                 ({ productId, productVariantId, ...product }) => ({
-  //                   ...product,
-  //                   vendorName: vendor.vendorName,
-  //                   product: {
-  //                     connect: { productId: productId },
-  //                   },
-  //                   productVariant: {
-  //                     connect: { productVariantId },
-  //                   },
-  //                 }),
-  //               ),
-  //             },
-  //           })),
-  //         },
-  //       },
-  //     });
-
-  //     return {
-  //       message: 'Customer order created successfully',
-  //       data: res,
-  //     };
-  //   } catch (error) {
-  //     return {
-  //       isSuccess: false,
-  //       message: 'Error creating customer order',
-  //       error: error.message,
-  //     };
-  //   }
-  // }
-
   async findAll(): Promise<Response<CustomerOrder[]>> {
     try {
       const res = await this._db.customerOrder.findMany();
@@ -208,6 +156,44 @@ export class CustomerOrderService {
       return {
         isSuccess: false,
         message: 'Error fetching customer order',
+        error: error.message,
+      };
+    }
+  }
+
+  async findUserOrders(customerId: string): Promise<Response<CustomerOrder[]>> {
+    try {
+      const res = await this._db.customerOrder.findMany({
+        where: { customerId },
+        orderBy: { createdAt: 'desc' },
+        include: {
+          customerOrderVendor: {
+            include: {
+              customerOrderVendorProduct: {
+                include: {
+                  product: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (res.length === 0) {
+        return {
+          message: 'No customer orders found',
+          data: res,
+        };
+      }
+
+      return {
+        message: 'Customer orders fetched successfully',
+        data: res,
+      };
+    } catch (error) {
+      return {
+        isSuccess: false,
+        message: 'Error fetching customer orders',
         error: error.message,
       };
     }

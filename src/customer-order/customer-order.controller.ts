@@ -12,7 +12,6 @@ import { CustomerOrderService } from './customer-order.service';
 import { CreateCustomerOrderDto } from './dto/create-customer-order.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth/jwt-auth.guard';
-import { Prisma } from '@prisma/client';
 
 @ApiTags('customer Order')
 @Controller('customer-order')
@@ -31,6 +30,12 @@ export class CustomerOrderController {
   @Get()
   findAll() {
     return this.customerOrderService.findAll();
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('user')
+  findUserOrders(@Req() req) {
+    return this.customerOrderService.findUserOrders(req.user.id);
   }
 
   @Get(':id')
