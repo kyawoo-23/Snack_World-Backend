@@ -1,8 +1,18 @@
-import { Controller, Get, Post, Body, Patch, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  UseGuards,
+  Req,
+} from '@nestjs/common';
 import { CustomerService } from './customer.service';
 import { ApiTags } from '@nestjs/swagger';
 import { Prisma } from '@prisma/client';
 import { AuthRequestDto } from 'src/common/auth.model';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth/jwt-auth.guard';
 
 @ApiTags('customer')
 @Controller('customer')
@@ -15,7 +25,7 @@ export class CustomerController {
     if (user.isSuccess === false) {
       return user;
     }
-    console.log('HELLOOOOOOOOOOOO', user);
+
     return this.customerService.login(user.data);
   }
 
@@ -24,17 +34,16 @@ export class CustomerController {
     return this.customerService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.customerService.findOne(id);
+  @UseGuards(JwtAuthGuard)
+  @Get('profile')
+  findOne(@Req() req) {
+    return this.customerService.findOne(req.user.id);
   }
 
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateCustomerDto: Prisma.CustomerUpdateInput,
-  ) {
-    return this.customerService.update(id, updateCustomerDto);
+  @UseGuards(JwtAuthGuard)
+  @Patch()
+  update(@Req() req, @Body() updateCustomerDto: Prisma.CustomerUpdateInput) {
+    return this.customerService.update(req.user.id, updateCustomerDto);
   }
 
   @Post('login')

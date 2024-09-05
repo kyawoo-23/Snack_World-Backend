@@ -90,6 +90,14 @@ export class CustomerOrderService {
         },
       });
 
+      if (customerOrder) {
+        await this._db.cartProduct.deleteMany({
+          where: {
+            customerId,
+          },
+        });
+      }
+
       return {
         message: 'Customer order created successfully',
         data: customerOrder,

@@ -89,17 +89,29 @@ export class CustomerService {
   async update(
     id: string,
     updateCustomerDto: Prisma.CustomerUpdateInput,
-  ): Promise<Response<Customer>> {
+  ): Promise<Response<Partial<Customer>>> {
     try {
+      let { password, ...rest } = updateCustomerDto;
+
+      if (password) {
+        password = await bcrypt.hash(password as string, 10);
+      }
+
       const res = await this._db.customer.update({
         where: {
           customerId: id,
         },
-        data: updateCustomerDto,
+        data: {
+          ...rest,
+          ...(password && { password }),
+        },
+        omit: {
+          password: true,
+        },
       });
 
       return {
-        message: 'Customer updated successfully',
+        message: 'Profile updated successfully',
         data: res,
       };
     } catch (error) {
