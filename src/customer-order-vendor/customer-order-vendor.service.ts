@@ -47,6 +47,48 @@ export class CustomerOrderVendorService {
     }
   }
 
+  async findByVendor(
+    vendorId: string,
+    { status = 'ALL', startDate, endDate }: GetCustomerVendorOrdersDTO,
+  ): Promise<Response<CustomerOrderVendor[]>> {
+    try {
+      const query = {
+        where: {
+          vendorId,
+        },
+        include: {
+          customerOrder: true,
+          vendor: true,
+          customer: true,
+        },
+      };
+
+      if (status !== 'ALL') {
+        query['where']['customerOrderVendorStatus'] = status;
+      }
+
+      const customerOrderVendors =
+        await this._db.customerOrderVendor.findMany(query);
+
+      if (customerOrderVendors.length === 0) {
+        return {
+          data: [],
+          message: 'No customer order vendors found',
+        };
+      }
+
+      return {
+        data: customerOrderVendors,
+        message: 'Customer order vendors retrieved successfully',
+      };
+    } catch (error) {
+      return {
+        isSuccess: false,
+        message: 'Error occurred while retrieving customer order vendors',
+      };
+    }
+  }
+
   async findOne(id: string): Promise<Response<CustomerOrderVendor>> {
     try {
       const customerOrderVendor = await this._db.customerOrderVendor.findUnique(

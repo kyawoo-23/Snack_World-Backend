@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateCustomerOrderDto } from './dto/create-customer-order.dto';
 import { DatabaseService } from 'src/database/database.service';
-import { CustomerOrder, Prisma, Vendor } from '@prisma/client';
+import { CustomerOrder, Prisma, Product, Vendor } from '@prisma/client';
 import { Response } from 'src/common/interceptors/response.interceptor';
 
 @Injectable()
@@ -19,43 +19,132 @@ export class CustomerOrderService {
         throw new Error('Missing or invalid product data');
       }
 
-      const orderProducts = await Promise.all(
-        products.map(async (product) => {
-          const { productId, productVariantId } = product;
+      // const orderVendors = await Promise.all(
+      //   products.map(async (product) => {
+      //     const { productId } = product;
 
-          // Find product details
-          const foundProduct = await this._db.product.findUnique({
-            where: { productId },
-            select: {
-              productId: true,
-              name: true,
-              vendor: { select: { vendorId: true, name: true } },
-              productVariant: {
-                where: { productVariantId },
-                select: {
-                  productVariantId: true,
-                  variant: {
-                    select: { name: true },
-                  },
+      //     const foundVendor = await this._db.product.findUnique({
+      //       where: { productId },
+      //       select: { vendor: { select: { vendorId: true, name: true } } },
+      //     });
+
+      //     if (!foundVendor) {
+      //       throw new Error('Invalid product or Vendor');
+      //     }
+
+      //     return {
+      //       vendorId: foundVendor.vendor.vendorId,
+      //       vendorName: foundVendor.vendor.name,
+      //     };
+      //   }),
+      // );
+
+      // const orderProducts = await Promise.all(
+      //   products.map(async (product) => {
+      //     const { productId, productVariantId } = product;
+
+      //     // Find product details
+      //     const foundProduct = await this._db.product.findUnique({
+      //       where: { productId },
+      //       select: {
+      //         productId: true,
+      //         name: true,
+      //         vendor: { select: { vendorId: true, name: true } },
+      //         productVariant: {
+      //           where: { productVariantId },
+      //           select: {
+      //             productVariantId: true,
+      //             variant: {
+      //               select: { name: true },
+      //             },
+      //           },
+      //         },
+      //       },
+      //     });
+
+      //     // Check if product and variant exist
+      //     if (!foundProduct) {
+      //       throw new Error('Invalid product or product variant');
+      //     }
+
+      //     return {
+      //       ...product,
+      //       vendorId: foundProduct.vendor.vendorId,
+      //       vendorName: foundProduct.vendor.name,
+      //       productName: foundProduct.name,
+      //       variantName: product.variantName,
+      //     };
+      //   }),
+      // );
+
+      const groupedVendors: Record<
+        string,
+        {
+          vendorId: string;
+          vendorName: string;
+          products: {
+            vendorId: string;
+            vendorName: string;
+            productName: string;
+            variantName: string;
+            productId: string;
+            quantity: number;
+            productVariantId: string;
+            price: number;
+          }[];
+        }
+      > = {};
+
+      for (const product of products) {
+        const { productId, productVariantId } = product;
+
+        // Fetch vendor details along with the product details
+        const foundProduct = await this._db.product.findUnique({
+          where: { productId },
+          select: {
+            productId: true,
+            name: true,
+            vendor: { select: { vendorId: true, name: true } },
+            productVariant: {
+              where: { productVariantId },
+              select: {
+                productVariantId: true,
+                variant: {
+                  select: { name: true },
                 },
               },
             },
-          });
+          },
+        });
 
-          // Check if product and variant exist
-          if (!foundProduct) {
-            throw new Error('Invalid product or product variant');
-          }
+        // Check if product and variant exist
+        if (!foundProduct) {
+          throw new Error('Invalid product or product variant');
+        }
 
-          return {
-            ...product,
-            vendorId: foundProduct.vendor.vendorId,
-            vendorName: foundProduct.vendor.name,
-            productName: foundProduct.name,
-            variantName: product.variantName,
+        const { vendorId, name: vendorName } = foundProduct.vendor;
+
+        // If vendor does not exist in the grouped result, initialize it
+        if (!groupedVendors[vendorId]) {
+          groupedVendors[vendorId] = {
+            vendorId,
+            vendorName,
+            products: [],
           };
-        }),
-      );
+        }
+
+        // Add the product to the respective vendor
+        groupedVendors[vendorId].products.push({
+          ...product,
+          vendorId,
+          vendorName,
+          productName: foundProduct.name,
+          variantName: product.variantName,
+        });
+      }
+
+      // Convert grouped object to an array of vendors with their products
+      const orderVendors = Object.values(groupedVendors);
 
       // Create CustomerOrder
       const customerOrder = await this._db.customerOrder.create({
@@ -65,17 +154,17 @@ export class CustomerOrderService {
             connect: { customerId },
           },
           customerOrderVendor: {
-            create: orderProducts.map((product) => ({
-              vendorName: product.vendorName,
+            create: orderVendors.map((vendor) => ({
+              vendorName: vendor.vendorName,
               deliveryAddress: data.deliveryAddress,
               customer: {
                 connect: { customerId },
               },
               vendor: {
-                connect: { vendorId: product.vendorId },
+                connect: { vendorId: vendor.vendorId },
               },
               customerOrderVendorProduct: {
-                create: {
+                create: vendor.products.map((product) => ({
                   quantity: product.quantity,
                   price: product.price,
                   productId: product.productId,
@@ -83,7 +172,7 @@ export class CustomerOrderService {
                   productName: product.productName,
                   variantName: product.variantName,
                   vendorName: product.vendorName,
-                },
+                })),
               },
             })),
           },
