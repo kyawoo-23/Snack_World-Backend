@@ -225,7 +225,7 @@ model CustomerOrder {
 
 model DeliveryOrder {
   deliveryOrderId       String              @id @default(uuid())
-  deliveryOrderStatus   String              @default("PENDING")
+  deliveryOrderStatus   String              @default("NEW")
   deliveryName          String
   startAt               DateTime
   endAt                 DateTime
@@ -239,7 +239,7 @@ model CustomerOrderVendor {
   customerOrderVendorId      String                       @id @default(uuid())
   vendorName                 String
   vendorId                   String
-  customerOrderVendorStatus  String                       @default("PENDING")
+  customerOrderVendorStatus  String                       @default("NEW")
   deliveryAddress            String
   customerOrderId            String
   customerId                 String
