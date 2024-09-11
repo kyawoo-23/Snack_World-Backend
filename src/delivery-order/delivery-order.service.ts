@@ -26,15 +26,6 @@ export class DeliveryOrderService {
         },
       });
 
-      const order = await this._db.customerOrder.update({
-        where: {
-          customerOrderId,
-        },
-        data: {
-          orderStatus: 'CONFIRMED',
-        },
-      });
-
       const vendor = await this._db.customerOrderVendor.update({
         where: {
           customerOrderVendorId,
@@ -52,6 +43,28 @@ export class DeliveryOrderService {
           orderVendorProductStatus: 'ACCEPTED',
         },
       });
+
+      // Check if all CustomerOrderVendor statuses are not ACCEPTED or NEW
+      const customerOrderVendors = await this._db.customerOrderVendor.findMany({
+        where: {
+          customerOrderId,
+        },
+      });
+
+      const noNew = customerOrderVendors.every(
+        (vendor) => vendor.customerOrderVendorStatus !== 'NEW',
+      );
+
+      if (noNew) {
+        await this._db.customerOrder.update({
+          where: {
+            customerOrderId,
+          },
+          data: {
+            orderStatus: 'CONFIRMED',
+          },
+        });
+      }
 
       return {
         message: 'Delivery order created successfully',
@@ -75,53 +88,59 @@ export class DeliveryOrderService {
         include: { delivery: true },
       });
 
-      const updateData: any = {
-        deliveryOrderStatus: STATUS,
-        customerOrderVendor: {
-          update: {
-            customerOrderVendorStatus: STATUS,
-            customerOrder: {
-              update: {
-                orderStatus: STATUS,
-              },
-            },
-          },
-        },
-      };
-
-      // Conditionally add delivery update data if delivery exists
-      if (deliveryOrder.delivery) {
-        updateData.delivery = {
-          update: {
-            deliveryStatus: STATUS,
-          },
-        };
-      }
-
-      // Perform the update operation
       const res = await this._db.deliveryOrder.update({
         where: { deliveryOrderId },
-        data: updateData,
+        data: {
+          deliveryOrderStatus: STATUS,
+          customerOrderVendor: {
+            update: {
+              customerOrderVendorStatus: STATUS,
+            },
+          },
+          // Conditionally include delivery update data if delivery exists
+          ...(deliveryOrder.delivery && {
+            delivery: {
+              update: {
+                deliveryStatus: STATUS,
+              },
+            },
+          }),
+        },
+        include: {
+          customerOrderVendor: {
+            include: {
+              customerOrder: true,
+            },
+          },
+          delivery: true,
+        },
       });
 
-      // const res = await this._db.deliveryOrder.update({
-      //   where: {
-      //     deliveryOrderId,
-      //   },
-      //   data: {
-      //     deliveryOrderStatus: STATUS,
-      //     customerOrderVendor: {
-      //       update: {
-      //         customerOrderVendorStatus: STATUS,
-      //         customerOrder: {
-      //           update: {
-      //             orderStatus: STATUS,
-      //           },
-      //         },
-      //       },
-      //     },
-      //   },
-      // });
+      const { customerOrderId } = res.customerOrderVendor;
+
+      // Check if all CustomerOrderVendor statuses are not ACCEPTED or NEW
+      const customerOrderVendors = await this._db.customerOrderVendor.findMany({
+        where: {
+          customerOrderId,
+        },
+      });
+
+      const noVendorsAcceptedOrNew = customerOrderVendors.every(
+        (vendor) =>
+          vendor.customerOrderVendorStatus !== 'NEW' &&
+          vendor.customerOrderVendorStatus !== 'ACCEPTED',
+      );
+
+      if (noVendorsAcceptedOrNew) {
+        await this._db.customerOrder.update({
+          where: {
+            customerOrderId,
+          },
+          data: {
+            orderStatus: STATUS,
+          },
+        });
+      }
 
       return {
         message: 'Delivery order started successfully',

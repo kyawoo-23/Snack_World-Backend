@@ -52,23 +52,22 @@ export class CustomerOrderVendorService {
     { status = 'ALL', startDate, endDate }: GetCustomerVendorOrdersDTO,
   ): Promise<Response<CustomerOrderVendor[]>> {
     try {
-      const query = {
+      const customerOrderVendors = await this._db.customerOrderVendor.findMany({
         where: {
           vendorId,
+          ...(status !== 'ALL' && { customerOrderVendorStatus: status }),
         },
         include: {
           customerOrder: true,
           vendor: true,
           customer: true,
         },
-      };
-
-      if (status !== 'ALL') {
-        query['where']['customerOrderVendorStatus'] = status;
-      }
-
-      const customerOrderVendors =
-        await this._db.customerOrderVendor.findMany(query);
+        orderBy: {
+          customerOrder: {
+            createdAt: 'desc',
+          },
+        },
+      });
 
       if (customerOrderVendors.length === 0) {
         return {
