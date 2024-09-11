@@ -243,6 +243,7 @@ model CustomerOrderVendor {
   deliveryAddress            String
   customerOrderId            String
   customerId                 String
+  note                       String?
   vendor                     Vendor                       @relation(fields: [vendorId], references: [vendorId])
   customerOrder              CustomerOrder                @relation(fields: [customerOrderId], references: [customerOrderId])
   customer                   Customer                     @relation(fields: [customerId], references: [customerId])
