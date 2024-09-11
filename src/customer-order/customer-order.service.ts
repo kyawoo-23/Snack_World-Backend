@@ -19,64 +19,6 @@ export class CustomerOrderService {
         throw new Error('Missing or invalid product data');
       }
 
-      // const orderVendors = await Promise.all(
-      //   products.map(async (product) => {
-      //     const { productId } = product;
-
-      //     const foundVendor = await this._db.product.findUnique({
-      //       where: { productId },
-      //       select: { vendor: { select: { vendorId: true, name: true } } },
-      //     });
-
-      //     if (!foundVendor) {
-      //       throw new Error('Invalid product or Vendor');
-      //     }
-
-      //     return {
-      //       vendorId: foundVendor.vendor.vendorId,
-      //       vendorName: foundVendor.vendor.name,
-      //     };
-      //   }),
-      // );
-
-      // const orderProducts = await Promise.all(
-      //   products.map(async (product) => {
-      //     const { productId, productVariantId } = product;
-
-      //     // Find product details
-      //     const foundProduct = await this._db.product.findUnique({
-      //       where: { productId },
-      //       select: {
-      //         productId: true,
-      //         name: true,
-      //         vendor: { select: { vendorId: true, name: true } },
-      //         productVariant: {
-      //           where: { productVariantId },
-      //           select: {
-      //             productVariantId: true,
-      //             variant: {
-      //               select: { name: true },
-      //             },
-      //           },
-      //         },
-      //       },
-      //     });
-
-      //     // Check if product and variant exist
-      //     if (!foundProduct) {
-      //       throw new Error('Invalid product or product variant');
-      //     }
-
-      //     return {
-      //       ...product,
-      //       vendorId: foundProduct.vendor.vendorId,
-      //       vendorName: foundProduct.vendor.name,
-      //       productName: foundProduct.name,
-      //       variantName: product.variantName,
-      //     };
-      //   }),
-      // );
-
       const groupedVendors: Record<
         string,
         {

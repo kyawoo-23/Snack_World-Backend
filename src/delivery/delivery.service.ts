@@ -8,43 +8,43 @@ import { Delivery, Prisma } from '@prisma/client';
 export class DeliveryService {
   constructor(private _db: DatabaseService) {}
 
-  async create(
-    createDeliveryDto: CreateDeliveryDto,
-  ): Promise<Response<Delivery>> {
-    try {
-      const { adminId, deliverOrder, ...data } = createDeliveryDto;
-      const res = await this._db.delivery.create({
-        data: {
-          ...data,
-          admin: {
-            connect: {
-              adminId,
-            },
-          },
-          deliveryOrder: {
-            create: deliverOrder.map(({ customerOrderVendorId, ...order }) => ({
-              ...order,
-              customerOrderVendor: {
-                connect: {
-                  customerOrderVendorId,
-                },
-              },
-            })),
-          },
-        },
-      });
-      return {
-        message: 'Delivery created successfully',
-        data: res,
-      };
-    } catch (error) {
-      return {
-        isSuccess: false,
-        message: 'Failed to create delivery',
-        error: error.message,
-      };
-    }
-  }
+  // async create(
+  //   createDeliveryDto: CreateDeliveryDto,
+  // ): Promise<Response<Delivery>> {
+  //   try {
+  //     const { adminId, deliverOrder, ...data } = createDeliveryDto;
+  //     const res = await this._db.delivery.create({
+  //       data: {
+  //         ...data,
+  //         admin: {
+  //           connect: {
+  //             adminId,
+  //           },
+  //         },
+  //         deliveryOrder: {
+  //           create: deliverOrder.map(({ customerOrderVendorId, ...order }) => ({
+  //             ...order,
+  //             customerOrderVendor: {
+  //               connect: {
+  //                 customerOrderVendorId,
+  //               },
+  //             },
+  //           })),
+  //         },
+  //       },
+  //     });
+  //     return {
+  //       message: 'Delivery created successfully',
+  //       data: res,
+  //     };
+  //   } catch (error) {
+  //     return {
+  //       isSuccess: false,
+  //       message: 'Failed to create delivery',
+  //       error: error.message,
+  //     };
+  //   }
+  // }
 
   async findAll(): Promise<Response<Delivery[]>> {
     try {

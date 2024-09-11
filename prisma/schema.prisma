@@ -227,12 +227,13 @@ model DeliveryOrder {
   deliveryOrderId       String              @id @default(uuid())
   deliveryOrderStatus   String              @default("NEW")
   deliveryName          String
-  startAt               DateTime
-  endAt                 DateTime
-  deliveryId            String
+  type                  String
+  deliveryId            String?
   customerOrderVendorId String
-  delivery              Delivery            @relation(fields: [deliveryId], references: [deliveryId])
+  delivery              Delivery?           @relation(fields: [deliveryId], references: [deliveryId])
   customerOrderVendor   CustomerOrderVendor @relation(fields: [customerOrderVendorId], references: [customerOrderVendorId])
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
 }
 
 model CustomerOrderVendor {

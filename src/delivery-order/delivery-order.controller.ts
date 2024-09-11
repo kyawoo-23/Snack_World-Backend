@@ -5,16 +5,24 @@ import {
   Body,
   Patch,
   Param,
-  Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { DeliveryOrderService } from './delivery-order.service';
 import { Prisma } from '@prisma/client';
 import { ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth/jwt-auth.guard';
+import { CreateDeliveryOrderDto } from 'src/delivery-order/dto/create-delivery-order.dto';
 
+@UseGuards(JwtAuthGuard)
 @ApiTags('delivery-order')
 @Controller('delivery-order')
 export class DeliveryOrderController {
   constructor(private readonly deliveryOrderService: DeliveryOrderService) {}
+
+  @Post()
+  create(@Body() createDeliveryOrderDto: CreateDeliveryOrderDto) {
+    return this.deliveryOrderService.create(createDeliveryOrderDto);
+  }
 
   @Get()
   findAll() {

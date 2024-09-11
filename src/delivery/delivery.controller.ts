@@ -9,10 +9,10 @@ import { ApiTags } from '@nestjs/swagger';
 export class DeliveryController {
   constructor(private readonly deliveryService: DeliveryService) {}
 
-  @Post()
-  create(@Body() createDeliveryDto: CreateDeliveryDto) {
-    return this.deliveryService.create(createDeliveryDto);
-  }
+  // @Post()
+  // create(@Body() createDeliveryDto: CreateDeliveryDto) {
+  //   return this.deliveryService.create(createDeliveryDto);
+  // }
 
   @Get()
   findAll() {
