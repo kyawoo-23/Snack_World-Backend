@@ -53,20 +53,6 @@ export class DeliveryOrderService {
         },
       });
 
-      // await this._db.deliveryOrder.create({
-      //   data: {
-      //     deliveryName:
-      //       data.type === 'SELF'
-      //         ? order.orderCode + '_' + vendor.vendorName
-      //         : order.orderCode + '_SNACK_WORLD',
-      //     customerOrderVendor: {
-      //       connect: {
-      //         customerOrderVendorId,
-      //       },
-      //     },
-      //   },
-      // });
-
       return {
         message: 'Delivery order created successfully',
         data: res,
@@ -75,6 +61,165 @@ export class DeliveryOrderService {
       return {
         isSuccess: false,
         message: 'Failed to create delivery order',
+        error: error.message,
+      };
+    }
+  }
+
+  async start(deliveryOrderId: string): Promise<Response<DeliveryOrder>> {
+    try {
+      const STATUS = 'DELIVERING';
+
+      const deliveryOrder = await this._db.deliveryOrder.findUnique({
+        where: { deliveryOrderId },
+        include: { delivery: true },
+      });
+
+      const updateData: any = {
+        deliveryOrderStatus: STATUS,
+        customerOrderVendor: {
+          update: {
+            customerOrderVendorStatus: STATUS,
+            customerOrder: {
+              update: {
+                orderStatus: STATUS,
+              },
+            },
+          },
+        },
+      };
+
+      // Conditionally add delivery update data if delivery exists
+      if (deliveryOrder.delivery) {
+        updateData.delivery = {
+          update: {
+            deliveryStatus: STATUS,
+          },
+        };
+      }
+
+      // Perform the update operation
+      const res = await this._db.deliveryOrder.update({
+        where: { deliveryOrderId },
+        data: updateData,
+      });
+
+      // const res = await this._db.deliveryOrder.update({
+      //   where: {
+      //     deliveryOrderId,
+      //   },
+      //   data: {
+      //     deliveryOrderStatus: STATUS,
+      //     customerOrderVendor: {
+      //       update: {
+      //         customerOrderVendorStatus: STATUS,
+      //         customerOrder: {
+      //           update: {
+      //             orderStatus: STATUS,
+      //           },
+      //         },
+      //       },
+      //     },
+      //   },
+      // });
+
+      return {
+        message: 'Delivery order started successfully',
+        data: res,
+      };
+    } catch (error) {
+      return {
+        isSuccess: false,
+        message: 'Failed to start delivery order',
+        error: error.message,
+      };
+    }
+  }
+
+  async end(deliveryOrderId: string): Promise<Response<DeliveryOrder>> {
+    try {
+      const STATUS = 'DELIVERED';
+
+      // Update the delivery order and associated customer order vendor status
+      const deliveryOrder = await this._db.deliveryOrder.update({
+        where: {
+          deliveryOrderId,
+        },
+        data: {
+          deliveryOrderStatus: STATUS,
+          customerOrderVendor: {
+            update: {
+              customerOrderVendorStatus: STATUS,
+            },
+          },
+        },
+        include: {
+          customerOrderVendor: {
+            include: {
+              customerOrder: true,
+            },
+          },
+          delivery: true,
+        },
+      });
+
+      const { customerOrderId } = deliveryOrder.customerOrderVendor;
+      const deliveryId = deliveryOrder.delivery?.deliveryId;
+
+      // Check if all CustomerOrderVendor statuses are DELIVERED
+      const customerOrderVendors = await this._db.customerOrderVendor.findMany({
+        where: {
+          customerOrderId,
+        },
+      });
+
+      const allVendorsDeliveredOrCancelled = customerOrderVendors.every(
+        (vendor) =>
+          vendor.customerOrderVendorStatus === STATUS ||
+          vendor.customerOrderVendorStatus === 'CANCELLED',
+      );
+
+      if (allVendorsDeliveredOrCancelled) {
+        await this._db.customerOrder.update({
+          where: {
+            customerOrderId,
+          },
+          data: {
+            orderStatus: STATUS,
+          },
+        });
+      }
+
+      // Check if all DeliveryOrders with the same deliveryId are DELIVERED
+      const deliveryOrders = await this._db.deliveryOrder.findMany({
+        where: {
+          deliveryId,
+        },
+      });
+
+      const allDeliveryOrdersDelivered = deliveryOrders.every(
+        (order) => order.deliveryOrderStatus === STATUS,
+      );
+
+      if (allDeliveryOrdersDelivered) {
+        await this._db.delivery.update({
+          where: {
+            deliveryId,
+          },
+          data: {
+            deliveryStatus: STATUS,
+          },
+        });
+      }
+
+      return {
+        message: 'Delivery order ended successfully',
+        data: deliveryOrder,
+      };
+    } catch (error) {
+      return {
+        isSuccess: false,
+        message: 'Failed to end delivery order',
         error: error.message,
       };
     }

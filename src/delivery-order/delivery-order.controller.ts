@@ -24,6 +24,16 @@ export class DeliveryOrderController {
     return this.deliveryOrderService.create(createDeliveryOrderDto);
   }
 
+  @Post(':id/start')
+  start(@Param('id') id: string) {
+    return this.deliveryOrderService.start(id);
+  }
+
+  @Post(':id/end')
+  end(@Param('id') id: string) {
+    return this.deliveryOrderService.end(id);
+  }
+
   @Get()
   findAll() {
     return this.deliveryOrderService.findAll();
