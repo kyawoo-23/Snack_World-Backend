@@ -7,6 +7,7 @@ import {
   UseGuards,
   Headers,
   Query,
+  Post,
 } from '@nestjs/common';
 import { CustomerOrderVendorService } from './customer-order-vendor.service';
 import { Prisma } from '@prisma/client';
@@ -31,6 +32,11 @@ export class CustomerOrderVendorController {
     return this.customerOrderVendorService.findByVendor(vendorId, {
       status: allQueryParams.status,
     });
+  }
+
+  @Post(':id/cancel')
+  cancelOrder(@Param('id') id: string) {
+    return this.customerOrderVendorService.cancelOrder(id);
   }
 
   @Get('all')

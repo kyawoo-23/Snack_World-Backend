@@ -47,6 +47,70 @@ export class CustomerOrderVendorService {
     }
   }
 
+  async cancelOrder(
+    customerOrderVendorId: string,
+  ): Promise<Response<CustomerOrderVendor>> {
+    try {
+      const STATUS = 'CANCELLED';
+      const customerOrderVendor = await this._db.customerOrderVendor.update({
+        where: {
+          customerOrderVendorId,
+        },
+        data: {
+          customerOrderVendorStatus: STATUS,
+          customerOrderVendorProduct: {
+            updateMany: {
+              where: {
+                customerOrderVendorId,
+              },
+              data: {
+                orderVendorProductStatus: STATUS,
+              },
+            },
+          },
+        },
+        include: {
+          customerOrder: true,
+          customerOrderVendorProduct: true,
+        },
+      });
+
+      // Check if all CustomerOrder statuses are CANCELLED
+      const customerOrderId = customerOrderVendor.customerOrderId;
+
+      const customerOrderVendors = await this._db.customerOrderVendor.findMany({
+        where: {
+          customerOrderId,
+        },
+      });
+
+      const allCustomerOrderVendorsCancelled = customerOrderVendors.every(
+        (vendor) => vendor.customerOrderVendorStatus === STATUS,
+      );
+
+      if (allCustomerOrderVendorsCancelled) {
+        await this._db.customerOrder.update({
+          where: {
+            customerOrderId,
+          },
+          data: {
+            orderStatus: STATUS,
+          },
+        });
+      }
+
+      return {
+        data: customerOrderVendor,
+        message: 'Customer order vendor cancelled successfully',
+      };
+    } catch (error) {
+      return {
+        isSuccess: false,
+        message: 'Error occurred while cancelling customer order vendor',
+      };
+    }
+  }
+
   async findByVendor(
     vendorId: string,
     { status = 'ALL', startDate, endDate }: GetCustomerVendorOrdersDTO,

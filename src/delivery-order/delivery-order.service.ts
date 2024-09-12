@@ -118,29 +118,38 @@ export class DeliveryOrderService {
 
       const { customerOrderId } = res.customerOrderVendor;
 
-      // Check if all CustomerOrderVendor statuses are not ACCEPTED or NEW
-      const customerOrderVendors = await this._db.customerOrderVendor.findMany({
+      await this._db.customerOrder.update({
         where: {
           customerOrderId,
         },
+        data: {
+          orderStatus: STATUS,
+        },
       });
 
-      const noVendorsAcceptedOrNew = customerOrderVendors.every(
-        (vendor) =>
-          vendor.customerOrderVendorStatus !== 'NEW' &&
-          vendor.customerOrderVendorStatus !== 'ACCEPTED',
-      );
+      // Check if all CustomerOrderVendor statuses are not ACCEPTED or NEW
+      // const customerOrderVendors = await this._db.customerOrderVendor.findMany({
+      //   where: {
+      //     customerOrderId,
+      //   },
+      // });
 
-      if (noVendorsAcceptedOrNew) {
-        await this._db.customerOrder.update({
-          where: {
-            customerOrderId,
-          },
-          data: {
-            orderStatus: STATUS,
-          },
-        });
-      }
+      // const noVendorsAcceptedOrNew = customerOrderVendors.every(
+      //   (vendor) =>
+      //     vendor.customerOrderVendorStatus !== 'NEW' &&
+      //     vendor.customerOrderVendorStatus !== 'ACCEPTED',
+      // );
+
+      // if (noVendorsAcceptedOrNew) {
+      //   await this._db.customerOrder.update({
+      //     where: {
+      //       customerOrderId,
+      //     },
+      //     data: {
+      //       orderStatus: STATUS,
+      //     },
+      //   });
+      // }
 
       return {
         message: 'Delivery order started successfully',
@@ -244,14 +253,34 @@ export class DeliveryOrderService {
     }
   }
 
-  async findAll(): Promise<Response<DeliveryOrder[]>> {
+  async findAll({
+    type = 'ALL',
+    status = 'NEW',
+  }: {
+    type: 'ALL' | 'SELF' | 'REQUEST';
+    status: 'NEW' | 'DELIVERING' | 'DELIVERED' | 'ALL';
+  }): Promise<Response<DeliveryOrder[]>> {
     try {
-      const res = await this._db.deliveryOrder.findMany({
+      const query: any = {
         include: {
           delivery: true,
-          customerOrderVendor: true,
+          customerOrderVendor: {
+            include: {
+              customerOrder: true,
+            },
+          },
         },
-      });
+      };
+
+      if (type !== 'ALL') {
+        query.where = { type };
+      }
+
+      if (status !== 'ALL') {
+        query.where = { ...query.where, deliveryOrderStatus: status };
+      }
+
+      const res = await this._db.deliveryOrder.findMany(query);
 
       if (res.length === 0) {
         return {

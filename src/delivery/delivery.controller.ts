@@ -1,18 +1,29 @@
-import { Controller, Get, Post, Body, Patch, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  UseGuards,
+  Req,
+} from '@nestjs/common';
 import { DeliveryService } from './delivery.service';
 import { CreateDeliveryDto } from './dto/create-delivery.dto';
 import { Prisma } from '@prisma/client';
 import { ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth/jwt-auth.guard';
 
+@UseGuards(JwtAuthGuard)
 @ApiTags('delivery')
 @Controller('delivery')
 export class DeliveryController {
   constructor(private readonly deliveryService: DeliveryService) {}
 
-  // @Post()
-  // create(@Body() createDeliveryDto: CreateDeliveryDto) {
-  //   return this.deliveryService.create(createDeliveryDto);
-  // }
+  @Post()
+  create(@Req() req, @Body() createDeliveryDto: CreateDeliveryDto) {
+    return this.deliveryService.create(req.user.id, createDeliveryDto);
+  }
 
   @Get()
   findAll() {

@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { DeliveryOrderService } from './delivery-order.service';
 import { Prisma } from '@prisma/client';
@@ -35,8 +36,17 @@ export class DeliveryOrderController {
   }
 
   @Get()
-  findAll() {
-    return this.deliveryOrderService.findAll();
+  findAll(
+    @Query()
+    allQueryParams: {
+      type?: 'SELF' | 'REQUEST' | 'ALL';
+      status?: 'NEW' | 'DELIVERING' | 'DELIVERED' | 'ALL';
+    },
+  ) {
+    return this.deliveryOrderService.findAll({
+      status: allQueryParams.status,
+      type: allQueryParams.type,
+    });
   }
 
   @Get(':id')
