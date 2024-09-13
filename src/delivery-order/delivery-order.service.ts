@@ -266,7 +266,12 @@ export class DeliveryOrderService {
           delivery: true,
           customerOrderVendor: {
             include: {
-              customerOrder: true,
+              customerOrderVendorProduct: true,
+              customerOrder: {
+                include: {
+                  customer: true,
+                },
+              },
             },
           },
         },
