@@ -21,8 +21,8 @@ export class DeliveryController {
   constructor(private readonly deliveryService: DeliveryService) {}
 
   @Post()
-  create(@Req() req, @Body() createDeliveryDto: CreateDeliveryDto) {
-    return this.deliveryService.create(req.user.id, createDeliveryDto);
+  create(@Body() createDeliveryDto: CreateDeliveryDto) {
+    return this.deliveryService.create(createDeliveryDto);
   }
 
   @Get()

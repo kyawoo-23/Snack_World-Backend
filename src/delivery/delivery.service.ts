@@ -9,11 +9,10 @@ export class DeliveryService {
   constructor(private _db: DatabaseService) {}
 
   async create(
-    adminId: string,
     createDeliveryDto: CreateDeliveryDto,
   ): Promise<Response<Delivery>> {
     try {
-      const { deliveryOrderIds, ...data } = createDeliveryDto;
+      const { deliveryOrderIds, adminId, ...data } = createDeliveryDto;
       const res = await this._db.delivery.create({
         data: {
           ...data,

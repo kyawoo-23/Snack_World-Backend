@@ -88,7 +88,7 @@ model Delivery {
   deliveryName   String
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
-  completeAt     DateTime
+  completeAt     DateTime?
   adminId        String
   admin          Admin           @relation(fields: [adminId], references: [adminId])
   deliveryOrder  DeliveryOrder[]
