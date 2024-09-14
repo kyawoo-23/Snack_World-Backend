@@ -275,6 +275,9 @@ export class DeliveryOrderService {
             },
           },
         },
+        orderBy: {
+          createdAt: 'desc',
+        },
       };
 
       if (type !== 'ALL') {
