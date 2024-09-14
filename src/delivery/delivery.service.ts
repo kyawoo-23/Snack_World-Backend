@@ -63,11 +63,13 @@ export class DeliveryService {
                 include: {
                   customerOrder: true,
                   vendor: true,
-                  customerOrderVendorProduct: true,
                 },
               },
             },
           },
+        },
+        orderBy: {
+          createdAt: 'desc',
         },
       });
 
@@ -132,6 +134,54 @@ export class DeliveryService {
         data: res,
       };
     } catch (error) {}
+  }
+
+  async start(id: string): Promise<Response<Delivery>> {
+    try {
+      const res = await this._db.delivery.update({
+        where: {
+          deliveryId: id,
+        },
+        data: {
+          deliveryStatus: 'DELIVERING',
+        },
+      });
+
+      return {
+        message: 'Delivery started successfully',
+        data: res,
+      };
+    } catch (error) {
+      return {
+        isSuccess: false,
+        message: 'Failed to start delivery',
+        error: error.message,
+      };
+    }
+  }
+
+  async end(id: string): Promise<Response<Delivery>> {
+    try {
+      const res = await this._db.delivery.update({
+        where: {
+          deliveryId: id,
+        },
+        data: {
+          deliveryStatus: 'DELIVERED',
+        },
+      });
+
+      return {
+        message: 'Delivery ended successfully',
+        data: res,
+      };
+    } catch (error) {
+      return {
+        isSuccess: false,
+        message: 'Failed to end delivery',
+        error: error.message,
+      };
+    }
   }
 
   async update(

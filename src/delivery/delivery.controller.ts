@@ -35,6 +35,16 @@ export class DeliveryController {
     return this.deliveryService.findOne(id);
   }
 
+  @Post(':id/start')
+  start(@Param('id') id: string) {
+    return this.deliveryService.start(id);
+  }
+
+  @Post(':id/end')
+  end(@Param('id') id: string) {
+    return this.deliveryService.end(id);
+  }
+
   @Patch(':id')
   update(
     @Param('id') id: string,
