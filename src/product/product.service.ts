@@ -99,7 +99,7 @@ export class ProductService {
   }
 
   async findAllPublic(index: number): Promise<Response<Product[]>> {
-    const limit = 8;
+    const limit = 4;
     try {
       const res = await this._db.product.findMany({
         include: {

@@ -44,7 +44,7 @@ export class CustomerOrderController {
   }
 
   @Patch(':id/update-status')
-  updateStatus(@Param('id') id: string, @Body() status: string) {
-    return this.customerOrderService.updateStatus(id, status);
+  updateStatus(@Param('id') id: string, @Body() payload: { status: string }) {
+    return this.customerOrderService.updateStatus(id, payload.status);
   }
 }

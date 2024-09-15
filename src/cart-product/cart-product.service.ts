@@ -92,6 +92,9 @@ export class CartProductService {
             },
           },
         },
+        // orderBy: {
+        //   createdAt: 'desc',
+        // },
       });
 
       if (res.length === 0) {
