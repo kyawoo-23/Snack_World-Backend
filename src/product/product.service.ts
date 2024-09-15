@@ -273,24 +273,24 @@ export class ProductService {
         },
       });
 
-      if (productVariants) {
-        // Disconnect existing variants
-        await this._db.productVariant.deleteMany({
-          where: {
-            productId: id,
-          },
-        });
+      // if (productVariants) {
+      //   // Disconnect existing variants
+      //   await this._db.productVariant.deleteMany({
+      //     where: {
+      //       productId: id,
+      //     },
+      //   });
 
-        // Connect new variants
-        for (const variant of productVariants) {
-          await this._db.productVariant.create({
-            data: {
-              product: { connect: { productId: id } },
-              variant: { connect: { variantId: variant } },
-            },
-          });
-        }
-      }
+      //   // Connect new variants
+      //   for (const variant of productVariants) {
+      //     await this._db.productVariant.create({
+      //       data: {
+      //         product: { connect: { productId: id } },
+      //         variant: { connect: { variantId: variant } },
+      //       },
+      //     });
+      //   }
+      // }
 
       return {
         message: 'Product updated successfully',
