@@ -37,9 +37,7 @@ export class ProductController {
   }
 
   @Get('public/:index')
-  async findAllPublic(
-    @Param('index') index: string
-  ) {
+  async findAllPublic(@Param('index') index: string) {
     return this.productService.findAllPublic(+index);
   }
 
