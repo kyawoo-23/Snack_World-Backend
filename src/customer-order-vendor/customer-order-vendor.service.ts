@@ -203,18 +203,120 @@ export class CustomerOrderVendorService {
     id: string,
     status: string,
   ): Promise<Response<CustomerOrderVendor>> {
-    const customerOrderVendor = await this._db.customerOrderVendor.update({
-      where: {
-        customerOrderVendorId: id,
-      },
-      data: {
-        customerOrderVendorStatus: status,
-      },
-    });
+    try {
+      const customerOrderVendor = await this._db.customerOrderVendor.update({
+        where: {
+          customerOrderVendorId: id,
+        },
+        data: {
+          customerOrderVendorStatus: status,
+        },
+      });
 
-    return {
-      data: customerOrderVendor,
-      message: 'Customer order vendor status updated successfully',
-    };
+      return {
+        data: customerOrderVendor,
+        message: 'Customer order vendor status updated successfully',
+      };
+    } catch (error) {
+      return {
+        isSuccess: false,
+        message: 'Error occurred while updating customer order vendor status',
+      };
+    }
+  }
+
+  async getSalesReport(dto: SalesReportDto): Promise<
+    Response<{
+      totalSales: number;
+      totalProductsSold: number;
+      selfDeliveryOrders: number;
+      requestDeliveryOrders: number;
+      orders: CustomerOrderVendor[];
+    }>
+  > {
+    try {
+      const { vendorId, startDate, endDate } = dto;
+      // Fetch the report based on vendorId and date range
+      const report = await this._db.customerOrderVendor.findMany({
+        where: {
+          vendorId,
+          customerOrder: {
+            createdAt: {
+              gte: new Date(startDate),
+              lte: new Date(endDate),
+            },
+          },
+        },
+        include: {
+          deliveryOrder: true,
+          customerOrderVendorProduct: true,
+        },
+      });
+
+      if (report.length === 0) {
+        return {
+          data: {
+            totalSales: 0,
+            totalProductsSold: 0,
+            selfDeliveryOrders: 0,
+            requestDeliveryOrders: 0,
+            orders: [],
+          },
+          message: 'No sales report found',
+        };
+      }
+
+      // Aggregate total sales and total quantity sold
+      const totalSales = report.reduce((acc, order) => {
+        return (
+          acc +
+          order.customerOrderVendorProduct.reduce((sum, product) => {
+            return product.orderVendorProductStatus === 'ACCEPTED'
+              ? sum + product.quantity * product.price
+              : 0;
+          }, 0)
+        );
+      }, 0);
+
+      const totalProductsSold = report.reduce((acc, order) => {
+        return (
+          acc +
+          order.customerOrderVendorProduct.reduce((sum, product) => {
+            return product.orderVendorProductStatus === 'ACCEPTED'
+              ? sum + product.quantity
+              : 0;
+          }, 0)
+        );
+      }, 0);
+
+      let selfDeliveryOrders = 0;
+      let requestDeliveryOrders = 0;
+
+      report.map((order) => {
+        if (order.deliveryOrder.length > 0) {
+          if (order.deliveryOrder[0].type === 'SELF') {
+            selfDeliveryOrders++;
+          } else if (order.deliveryOrder[0].type === 'REQUEST') {
+            requestDeliveryOrders++;
+          }
+        }
+      });
+
+      return {
+        data: {
+          totalSales,
+          totalProductsSold,
+          selfDeliveryOrders: selfDeliveryOrders,
+          requestDeliveryOrders: requestDeliveryOrders,
+          orders: report,
+        },
+        message: 'Sales report retrieved successfully',
+      };
+    } catch (error) {
+      return {
+        isSuccess: false,
+        message: 'Error occurred while retrieving sales report',
+      };
+    }
   }
 }

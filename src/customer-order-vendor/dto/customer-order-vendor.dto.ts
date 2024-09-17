@@ -3,3 +3,9 @@ type GetCustomerVendorOrdersDTO = {
   startDate?: Date;
   endDate?: Date;
 };
+
+type SalesReportDto = {
+  vendorId: string;
+  startDate: Date;
+  endDate: Date;
+};
