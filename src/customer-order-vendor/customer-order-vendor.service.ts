@@ -255,8 +255,15 @@ export class CustomerOrderVendorService {
           },
         },
         include: {
+          customer: true,
+          customerOrder: true,
           deliveryOrder: true,
           customerOrderVendorProduct: true,
+        },
+        orderBy: {
+          customerOrder: {
+            createdAt: 'desc',
+          },
         },
       });
 
@@ -382,10 +389,14 @@ export class CustomerOrderVendorService {
 
           if (existingProduct) {
             existingProduct.quantity += product.quantity;
+            existingProduct.price =
+              (existingProduct.price * existingProduct.quantity +
+                product.price * product.quantity) /
+              (existingProduct.quantity + product.quantity);
             return acc;
           }
 
-          return [...acc, product];
+          return [...acc, { ...product }];
         }, [])
         .sort((a, b) => b.quantity - a.quantity);
 
