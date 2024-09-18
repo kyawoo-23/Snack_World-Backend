@@ -15,6 +15,38 @@ export class DeliveryOrderService {
       const { customerOrderId, customerOrderVendorId, ...data } =
         createDeliveryOrderDto;
 
+      // Check stock for each product variant
+      const products = await this._db.customerOrderVendorProduct.findMany({
+        where: {
+          customerOrderVendorId,
+        },
+      });
+
+      const stockCheckPromises = products.map(async (product) => {
+        const productVariant = await this._db.productVariant.findUnique({
+          where: {
+            productVariantId: product.productVariantId,
+          },
+        });
+
+        if (!productVariant || productVariant.stock < product.quantity) {
+          throw new Error(
+            `Insufficient stock for ${product.productName} - ${product.variantName}`,
+          );
+        }
+      });
+
+      // Wait for all stock checks to complete
+      try {
+        await Promise.all(stockCheckPromises);
+      } catch (error) {
+        return {
+          isSuccess: false,
+          message: error.message,
+          error: error,
+        };
+      }
+
       const res = await this._db.deliveryOrder.create({
         data: {
           ...data,
