@@ -229,6 +229,8 @@ export class CustomerOrderVendorService {
     Response<{
       totalSales: number;
       totalProductsSold: number;
+      totalOrders: number;
+      rejectedOrders: number;
       selfDeliveryOrders: number;
       requestDeliveryOrders: number;
       orders: CustomerOrderVendor[];
@@ -258,6 +260,8 @@ export class CustomerOrderVendorService {
           data: {
             totalSales: 0,
             totalProductsSold: 0,
+            rejectedOrders: 0,
+            totalOrders: 0,
             selfDeliveryOrders: 0,
             requestDeliveryOrders: 0,
             orders: [],
@@ -289,11 +293,15 @@ export class CustomerOrderVendorService {
         );
       }, 0);
 
+      let totalOrders = report.length;
+      let rejectedOrders = 0;
       let selfDeliveryOrders = 0;
       let requestDeliveryOrders = 0;
 
       report.map((order) => {
-        if (order.deliveryOrder.length > 0) {
+        if (order.customerOrderVendorStatus === 'CANCELLED') {
+          rejectedOrders++;
+        } else if (order.deliveryOrder.length > 0) {
           if (order.deliveryOrder[0].type === 'SELF') {
             selfDeliveryOrders++;
           } else if (order.deliveryOrder[0].type === 'REQUEST') {
@@ -305,9 +313,11 @@ export class CustomerOrderVendorService {
       return {
         data: {
           totalSales,
+          totalOrders,
+          rejectedOrders,
           totalProductsSold,
-          selfDeliveryOrders: selfDeliveryOrders,
-          requestDeliveryOrders: requestDeliveryOrders,
+          selfDeliveryOrders,
+          requestDeliveryOrders,
           orders: report,
         },
         message: 'Sales report retrieved successfully',
