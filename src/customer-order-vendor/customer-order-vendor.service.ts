@@ -1,5 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { CustomerOrderVendor, Prisma } from '@prisma/client';
+import {
+  CustomerOrderVendor,
+  CustomerOrderVendorProduct,
+  Prisma,
+  Product,
+} from '@prisma/client';
 import { Response } from 'src/common/interceptors/response.interceptor';
 import { DatabaseService } from 'src/database/database.service';
 
@@ -329,4 +334,70 @@ export class CustomerOrderVendorService {
       };
     }
   }
+
+  getSoldProductsReport = async (
+    dto: SalesReportDto,
+  ): Promise<Response<CustomerOrderVendorProduct[]>> => {
+    try {
+      const { vendorId, startDate, endDate } = dto;
+
+      const soldProductsReport = await this._db.customerOrderVendor.findMany({
+        where: {
+          vendorId: vendorId,
+          customerOrderVendorStatus: 'DELIVERED',
+          customerOrder: {
+            createdAt: {
+              gte: new Date(startDate),
+              lte: new Date(endDate),
+            },
+          },
+        },
+        include: {
+          customerOrderVendorProduct: true,
+        },
+      });
+
+      if (soldProductsReport.length === 0) {
+        return {
+          data: [],
+          message: 'No sold products report found',
+        };
+      }
+
+      const products = soldProductsReport
+        .map((order) => {
+          return order.customerOrderVendorProduct.map((product) => {
+            return {
+              ...product,
+            };
+          });
+        })
+        .flat();
+
+      const uniqueProducts = products
+        .reduce((acc: CustomerOrderVendorProduct[], product) => {
+          const existingProduct = acc.find(
+            (p) => p.productVariantId === product.productVariantId,
+          );
+
+          if (existingProduct) {
+            existingProduct.quantity += product.quantity;
+            return acc;
+          }
+
+          return [...acc, product];
+        }, [])
+        .sort((a, b) => b.quantity - a.quantity);
+
+      return {
+        data: uniqueProducts,
+        message: 'Sold products report retrieved successfully',
+      };
+    } catch (error) {
+      return {
+        isSuccess: false,
+        message: 'Error occurred while retrieving sold products report',
+      };
+    }
+  };
 }

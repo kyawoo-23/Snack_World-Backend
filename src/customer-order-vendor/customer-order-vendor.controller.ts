@@ -56,6 +56,18 @@ export class CustomerOrderVendorController {
     });
   }
 
+  @Get('product-report')
+  getProductReport(
+    @Headers('Vendor') vendorId: string,
+    @Query() payload: { startDate: Date; endDate: Date },
+  ) {
+    return this.customerOrderVendorService.getSoldProductsReport({
+      vendorId,
+      startDate: payload.startDate,
+      endDate: payload.endDate,
+    });
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.customerOrderVendorService.findOne(id);
