@@ -138,6 +138,15 @@ model Vendor {
   customerOrderVendor CustomerOrderVendor[]
   announcementVendor  AnnouncementVendor[]
   vendorUser          VendorUser[]
+  remark              VendorRemark[]
+}
+
+model VendorRemark {
+  vendorRemarkId String   @id @default(uuid())
+  content        String
+  vendorId       String
+  vendor         Vendor   @relation(fields: [vendorId], references: [vendorId])
+  createdAt      DateTime @default(now())
 }
 
 model Customer {

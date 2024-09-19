@@ -7,6 +7,7 @@ import {
   UseGuards,
   Req,
   Headers,
+  Query,
 } from '@nestjs/common';
 import { VendorPurchaseService } from './vendor-purchase.service';
 import { CreateVendorPurchaseDto } from 'src/vendor-purchase/dto/create-vendor-purchase.dto';
@@ -27,8 +28,15 @@ export class VendorPurchaseController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  findAll(@Headers('Vendor') vendorId: string) {
-    return this.vendorPurchaseService.findAll(vendorId);
+  findAll(
+    @Headers('Vendor') vendorId: string,
+    @Query() payload: { startDate: Date; endDate: Date },
+  ) {
+    return this.vendorPurchaseService.findAll({
+      vendorId,
+      startDate: payload.startDate,
+      endDate: payload.endDate,
+    });
   }
 
   @UseGuards(JwtAuthGuard)

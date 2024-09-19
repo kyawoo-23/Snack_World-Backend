@@ -14,7 +14,7 @@ import { Prisma } from '@prisma/client';
 import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth/jwt-auth.guard';
 
-// @UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard)
 @ApiTags('customer-order-vendor')
 @Controller('customer-order-vendor')
 export class CustomerOrderVendorController {

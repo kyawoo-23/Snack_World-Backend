@@ -26,6 +26,7 @@ import { WishlistProductModule } from './wishlist-product/wishlist-product.modul
 import { CartProductModule } from './cart-product/cart-product.module';
 import { ConfigModule } from '@nestjs/config';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { VendorRemarkModule } from './vendor-remark/vendor-remark.module';
 
 @Module({
   imports: [
@@ -65,6 +66,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
     DeliveryOrderModule,
     WishlistProductModule,
     CartProductModule,
+    VendorRemarkModule,
   ],
   controllers: [AppController],
   providers: [AppService],
