@@ -288,9 +288,13 @@ export class DeliveryOrderService {
   async findAll({
     type = 'ALL',
     status = 'NEW',
+    startDate,
+    endDate,
   }: {
     type: 'ALL' | 'SELF' | 'REQUEST';
     status: 'NEW' | 'DELIVERING' | 'DELIVERED' | 'ALL';
+    startDate?: Date;
+    endDate?: Date;
   }): Promise<Response<DeliveryOrder[]>> {
     try {
       const query: any = {
@@ -318,6 +322,19 @@ export class DeliveryOrderService {
 
       if (status !== 'ALL') {
         query.where = { ...query.where, deliveryOrderStatus: status };
+      }
+
+      const endOfEndDate = new Date(endDate);
+      endOfEndDate.setHours(23, 59, 59, 999);
+
+      if (startDate && endDate) {
+        query.where = {
+          ...query.where,
+          createdAt: {
+            gte: startDate,
+            lte: endOfEndDate,
+          },
+        };
       }
 
       const res = await this._db.deliveryOrder.findMany(query);

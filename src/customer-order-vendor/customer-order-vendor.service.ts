@@ -243,6 +243,10 @@ export class CustomerOrderVendorService {
   > {
     try {
       const { vendorId, startDate, endDate } = dto;
+
+      const endOfEndDate = new Date(endDate);
+      endOfEndDate.setHours(23, 59, 59, 999);
+
       // Fetch the report based on vendorId and date range
       const report = await this._db.customerOrderVendor.findMany({
         where: {
@@ -250,7 +254,7 @@ export class CustomerOrderVendorService {
           customerOrder: {
             createdAt: {
               gte: new Date(startDate),
-              lte: new Date(endDate),
+              lte: endOfEndDate,
             },
           },
         },
@@ -347,6 +351,8 @@ export class CustomerOrderVendorService {
   ): Promise<Response<CustomerOrderVendorProduct[]>> => {
     try {
       const { vendorId, startDate, endDate } = dto;
+      const endOfEndDate = new Date(endDate);
+      endOfEndDate.setHours(23, 59, 59, 999);
 
       const soldProductsReport = await this._db.customerOrderVendor.findMany({
         where: {
@@ -355,7 +361,7 @@ export class CustomerOrderVendorService {
           customerOrder: {
             createdAt: {
               gte: new Date(startDate),
-              lte: new Date(endDate),
+              lte: endOfEndDate,
             },
           },
         },

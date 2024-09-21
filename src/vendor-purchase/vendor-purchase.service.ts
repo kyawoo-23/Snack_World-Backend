@@ -73,6 +73,9 @@ export class VendorPurchaseService {
     endDate: Date;
   }): Promise<Response<VendorPurchase[]>> {
     try {
+      const endOfEndDate = new Date(endDate);
+      endOfEndDate.setHours(23, 59, 59, 999);
+
       const res = await this._db.vendorPurchase.findMany({
         include: {
           purchaseProduct: {
@@ -89,7 +92,7 @@ export class VendorPurchaseService {
           },
           createdAt: {
             gte: startDate,
-            lte: endDate,
+            lte: endOfEndDate,
           },
         },
         orderBy: {

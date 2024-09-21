@@ -41,6 +41,8 @@ export class DeliveryOrderController {
     allQueryParams: {
       type?: 'SELF' | 'REQUEST' | 'ALL';
       status?: 'NEW' | 'DELIVERING' | 'DELIVERED' | 'ALL';
+      startDate?: Date;
+      endDate?: Date;
     },
   ) {
     return this.deliveryOrderService.findAll({

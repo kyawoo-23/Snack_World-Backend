@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
 import { VendorRemarkService } from './vendor-remark.service';
 import { ApiTags } from '@nestjs/swagger';
 
@@ -10,6 +10,14 @@ export class VendorRemarkController {
   @Post()
   create(@Body() createVendorRemarkDto: { content: string; vendorId: string }) {
     return this.vendorRemarkService.create(createVendorRemarkDto);
+  }
+
+  @Get()
+  findAll(@Query() payload: { startDate: Date; endDate: Date }) {
+    return this.vendorRemarkService.findAll({
+      startDate: payload.startDate,
+      endDate: payload.endDate,
+    });
   }
 
   @Get(':id')
