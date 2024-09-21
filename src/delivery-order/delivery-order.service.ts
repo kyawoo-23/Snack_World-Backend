@@ -299,7 +299,11 @@ export class DeliveryOrderService {
     try {
       const query: any = {
         include: {
-          delivery: true,
+          delivery: {
+            include: {
+              admin: true,
+            },
+          },
           customerOrderVendor: {
             include: {
               customerOrderVendorProduct: true,
@@ -331,7 +335,7 @@ export class DeliveryOrderService {
         query.where = {
           ...query.where,
           createdAt: {
-            gte: startDate,
+            gte: new Date(startDate),
             lte: endOfEndDate,
           },
         };
@@ -346,7 +350,7 @@ export class DeliveryOrderService {
         };
       }
       return {
-        message: 'Delivery orders fetched successfully',
+        message: 'Delivery orders report fetched successfully',
         data: res,
       };
     } catch (error) {

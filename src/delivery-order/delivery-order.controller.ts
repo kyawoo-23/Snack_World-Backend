@@ -48,6 +48,8 @@ export class DeliveryOrderController {
     return this.deliveryOrderService.findAll({
       status: allQueryParams.status,
       type: allQueryParams.type,
+      startDate: allQueryParams.startDate,
+      endDate: allQueryParams.endDate,
     });
   }
 
