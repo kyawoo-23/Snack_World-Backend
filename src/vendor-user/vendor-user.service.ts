@@ -322,12 +322,19 @@ export class VendorUserService {
   async login(
     user: VendorUser,
   ): Promise<Response<AuthJwtPayload & { accessToken: string }>> {
+    const role = await this._db.vendorUserRole.findUnique({
+      where: {
+        vendorUserRoleId: user.vendorUserRoleId,
+      },
+    });
+
     const payload: AuthJwtPayload = {
       name: user.name,
       email: user.email,
       sub: user.vendorUserId,
-      role: user.vendorUserRoleId,
+      role: role.name,
     };
+
     return {
       isSuccess: true,
       data: {

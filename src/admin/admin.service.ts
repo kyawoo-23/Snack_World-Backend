@@ -315,12 +315,19 @@ export class AdminService {
   async login(
     user: Admin,
   ): Promise<Response<AuthJwtPayload & { accessToken: string }>> {
+    const role = await this._db.adminRole.findUnique({
+      where: {
+        adminRoleId: user.adminRoleId,
+      },
+    });
+
     const payload: AuthJwtPayload = {
       name: user.name,
       email: user.email,
       sub: user.adminId,
-      role: user.adminRoleId,
+      role: role.name,
     };
+
     return {
       isSuccess: true,
       data: {
