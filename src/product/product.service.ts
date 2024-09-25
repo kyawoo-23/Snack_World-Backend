@@ -98,7 +98,13 @@ export class ProductService {
     }
   }
 
-  async findAllPublic(index: number): Promise<Response<Product[]>> {
+  async findAllPublic({
+    index,
+    search = '',
+  }: {
+    index: number;
+    search: string;
+  }): Promise<Response<Product[]>> {
     const limit = 4;
     try {
       const res = await this._db.product.findMany({
@@ -113,6 +119,13 @@ export class ProductService {
         },
         where: {
           isActive: true,
+          ...(search && {
+            OR: [
+              { name: { contains: search } },
+              { category: { name: { contains: search } } },
+              { vendor: { name: { contains: search } } },
+            ],
+          }),
         },
         orderBy: {
           createdAt: 'desc',

@@ -37,8 +37,14 @@ export class ProductController {
   }
 
   @Get('public/:index')
-  async findAllPublic(@Param('index') index: string) {
-    return this.productService.findAllPublic(+index);
+  async findAllPublic(
+    @Param('index') index: string,
+    @Query() payload: { search: string },
+  ) {
+    return this.productService.findAllPublic({
+      index: +index,
+      search: payload.search,
+    });
   }
 
   @Get('featured')
