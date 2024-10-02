@@ -90,10 +90,13 @@ export class VendorPurchaseService {
           vendorUser: {
             vendorId,
           },
-          createdAt: {
-            gte: startDate,
-            lte: endOfEndDate,
-          },
+          ...(startDate &&
+            endDate && {
+              createdAt: {
+                gte: startDate,
+                lte: endOfEndDate,
+              },
+            }),
         },
         orderBy: {
           createdAt: 'desc',
