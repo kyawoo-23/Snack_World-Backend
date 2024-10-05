@@ -417,4 +417,81 @@ export class CustomerOrderVendorService {
       };
     }
   };
+
+  getVendorSalesReport = async (
+    dto: SalesReportDto,
+  ): Promise<Response<VendorSalesReport[]>> => {
+    try {
+      const { startDate, endDate } = dto;
+      const endOfEndDate = new Date(endDate);
+      endOfEndDate.setHours(23, 59, 59, 999);
+
+      const vendors = await this._db.vendor.findMany({
+        include: {
+          customerOrderVendor: {
+            where: {
+              customerOrder: {
+                createdAt: {
+                  gte: new Date(startDate),
+                  lte: new Date(endOfEndDate),
+                },
+              },
+            },
+            include: {
+              customerOrderVendorProduct: true,
+            },
+          },
+        },
+      });
+
+      const results = vendors
+        .map((vendor) => {
+          const totalSales = vendor.customerOrderVendor.reduce(
+            (total, order) => {
+              const orderTotal = order.customerOrderVendorProduct.reduce(
+                (sum, product) => {
+                  return sum + product.price * product.quantity;
+                },
+                0,
+              );
+              return total + orderTotal;
+            },
+            0,
+          );
+
+          return {
+            vendorId: vendor.vendorId,
+            vendorName: vendor.name,
+            totalSales,
+            totalProductsSold: vendor.customerOrderVendor.reduce(
+              (total, order) => {
+                return (
+                  total +
+                  order.customerOrderVendorProduct.reduce(
+                    (sum, product) => sum + product.quantity,
+                    0,
+                  )
+                );
+              },
+              0,
+            ),
+            totalOrders: vendor.customerOrderVendor.length,
+            cancelledOrders: vendor.customerOrderVendor.filter(
+              (order) => order.customerOrderVendorStatus === 'CANCELLED',
+            ).length,
+          };
+        })
+        .sort((a, b) => b.totalSales - a.totalSales);
+
+      return {
+        data: results,
+        message: 'Vendor sales report retrieved successfully',
+      };
+    } catch (error) {
+      return {
+        isSuccess: false,
+        message: 'Error occurred while retrieving vendor sales report',
+      };
+    }
+  };
 }

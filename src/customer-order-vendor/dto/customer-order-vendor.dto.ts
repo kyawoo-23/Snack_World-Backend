@@ -5,7 +5,16 @@ type GetCustomerVendorOrdersDTO = {
 };
 
 type SalesReportDto = {
-  vendorId: string;
+  vendorId?: string;
   startDate: Date;
   endDate: Date;
+};
+
+type VendorSalesReport = {
+  vendorId: string;
+  vendorName: string;
+  totalSales: number;
+  totalProductsSold: number;
+  totalOrders: number;
+  cancelledOrders: number;
 };

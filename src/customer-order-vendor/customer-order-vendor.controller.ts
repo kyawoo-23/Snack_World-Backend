@@ -14,7 +14,7 @@ import { Prisma } from '@prisma/client';
 import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth/jwt-auth.guard';
 
-@UseGuards(JwtAuthGuard)
+// @UseGuards(JwtAuthGuard)
 @ApiTags('customer-order-vendor')
 @Controller('customer-order-vendor')
 export class CustomerOrderVendorController {
@@ -63,6 +63,14 @@ export class CustomerOrderVendorController {
   ) {
     return this.customerOrderVendorService.getSoldProductsReport({
       vendorId,
+      startDate: payload.startDate,
+      endDate: payload.endDate,
+    });
+  }
+
+  @Get('vendor-sales-report')
+  getVendorSalesReport(@Query() payload: { startDate: Date; endDate: Date }) {
+    return this.customerOrderVendorService.getVendorSalesReport({
       startDate: payload.startDate,
       endDate: payload.endDate,
     });
