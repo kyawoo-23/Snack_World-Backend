@@ -51,6 +51,11 @@ export class WishlistProductService {
             include: {
               category: true,
               vendor: true,
+              productVariant: {
+                include: {
+                  variant: true,
+                },
+              },
             },
           },
         },
@@ -86,7 +91,6 @@ export class WishlistProductService {
           productId,
         },
       });
-      console.log('HIII', res);
 
       if (!res) {
         return {
