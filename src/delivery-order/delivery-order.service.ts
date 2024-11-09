@@ -217,6 +217,7 @@ export class DeliveryOrderService {
           customerOrderVendor: {
             include: {
               customerOrder: true,
+              customerOrderVendorProduct: true, // Include delivered products
             },
           },
           delivery: true,
@@ -226,7 +227,7 @@ export class DeliveryOrderService {
       const { customerOrderId } = deliveryOrder.customerOrderVendor;
       const deliveryId = deliveryOrder.delivery?.deliveryId;
 
-      // Check if all CustomerOrderVendor statuses are DELIVERED
+      // Check if all CustomerOrderVendor statuses are DELIVERED or CANCELLED
       const customerOrderVendors = await this._db.customerOrderVendor.findMany({
         where: {
           customerOrderId,
@@ -268,6 +269,22 @@ export class DeliveryOrderService {
           },
           data: {
             deliveryStatus: STATUS,
+          },
+        });
+      }
+
+      // Reduce the stock for each product variant in the delivered order
+      const deliveredProducts =
+        deliveryOrder.customerOrderVendor.customerOrderVendorProduct;
+      for (const product of deliveredProducts) {
+        await this._db.productVariant.update({
+          where: {
+            productVariantId: product.productVariantId,
+          },
+          data: {
+            stock: {
+              decrement: product.quantity, // Reduce stock by delivered quantity
+            },
           },
         });
       }
